@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtGui import QIcon
 from veritabani import baglanti_kur
 from hashleme import hashle
 
@@ -6,6 +7,7 @@ class HastaGirisEkrani(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Hasta Girişi")
+        self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(300, 300, 300, 200)
 
         # TC Kimlik No
@@ -61,7 +63,7 @@ class HastaGirisEkrani(QWidget):
                     QMessageBox.information(self, "Başarılı", f"Hoş geldiniz, {ad} {soyad}")
                     # 🔽 Burada yeni ekranı açıyoruz
                     from ekranlar.hasta_ana_ekran import HastaAnaEkrani  # konuma göre ayarla
-                    self.hasta_ekrani = HastaAnaEkrani(ad, soyad)
+                    self.hasta_ekrani = HastaAnaEkrani(ad, soyad, tc)
                     self.hasta_ekrani.show()
                     self.close()  # Giriş ekranını kapat
                 else:

@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QMessageBox, QWidget
+from PyQt5.QtGui import QIcon
 from veritabani import baglanti_kur
 from hashleme import hashle
 from ekranlar.doktor_ana_ekran import DoktorAnaEkran
@@ -7,6 +8,7 @@ class DoktorGirisEkrani(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Doktor Girişi")
+        self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(300,300,300,200)
 
         self.lbl_tc =QLabel("TC Kimlik No:", self)

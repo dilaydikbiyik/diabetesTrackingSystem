@@ -1,6 +1,7 @@
 import sys
 import psycopg2
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QListWidget, QVBoxLayout, QWidget, QPushButton, QMessageBox
+from PyQt5.QtGui import QIcon
 from veritabani import baglanti_kur
 from ekranlar.doktor_hasta_ekle import HastaEklemeEkrani
 from ekranlar.kan_sekeri_ekle import KanSekeriEklemeEkrani
@@ -10,6 +11,7 @@ class DoktorAnaEkran(QMainWindow):
         super().__init__()
         self.doktor_id = doktor_id
         self.setWindowTitle("Doktor Ana Ekranı")
+        self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(300, 100, 400, 400)
 
         # Ana widget ve layout

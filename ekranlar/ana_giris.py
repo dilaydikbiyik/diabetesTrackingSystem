@@ -55,6 +55,7 @@ class AnaGirisEkrani(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Diabetes Following System")
+        self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(400, 150, 1000, 700)
 
         # Arka plan rengi - e-Nabız tarzı gradient
@@ -85,12 +86,12 @@ class AnaGirisEkrani(QWidget):
 
         # Sağlık Bakanlığı logosu
         saglik_logo = QLabel()
-        pixmap = QPixmap("assets/saglik_logo.png").scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = QPixmap("assets/enabiz_logo.png").scaled(220, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         saglik_logo.setPixmap(pixmap)
 
         # e-Nabız logo ekleme
         enabiz_logo = QLabel()
-        enabiz_pixmap = QPixmap("assets/enabiz_logo.png").scaled(220, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        enabiz_pixmap = QPixmap("assets/saglik_logo.png").scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         enabiz_logo.setPixmap(enabiz_pixmap)
 
         ust_layout = QHBoxLayout(ust_serit)
