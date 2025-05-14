@@ -59,6 +59,11 @@ class HastaGirisEkrani(QWidget):
                 if result:
                     ad, soyad = result
                     QMessageBox.information(self, "Başarılı", f"Hoş geldiniz, {ad} {soyad}")
+                    # 🔽 Burada yeni ekranı açıyoruz
+                    from ekranlar.hasta_ana_ekran import HastaAnaEkrani  # konuma göre ayarla
+                    self.hasta_ekrani = HastaAnaEkrani(ad, soyad)
+                    self.hasta_ekrani.show()
+                    self.close()  # Giriş ekranını kapat
                 else:
                     QMessageBox.warning(self, "Hata", "Hasta bulunamadı!")
 
