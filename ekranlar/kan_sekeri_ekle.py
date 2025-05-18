@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QMessageBox, QWidget, QVBoxLayout, QDateTimeEdit
 from PyQt5.QtCore import QDateTime
 from veritabani import baglanti_kur
+from datetime import datetime
+import pytz
 
 class KanSekeriEklemeEkrani(QWidget):
     def __init__(self, hasta_id):
@@ -30,7 +32,8 @@ class KanSekeriEklemeEkrani(QWidget):
         self.setLayout(layout)
 
     def kan_sekeri_ekle(self):
-        tarih_saat = self.dt_tarih_saat.dateTime().toString("yyyy-MM-dd HH:mm:ss")
+        tarih_saat = self.dt_tarih_saat.dateTime().toPyDateTime()
+        tarih_saat = pytz.timezone("Europe/Istanbul").localize(tarih_saat)
         kan_sekeri_str = self.txt_kan_sekeri.text()
 
         if not kan_sekeri_str:
@@ -41,7 +44,6 @@ class KanSekeriEklemeEkrani(QWidget):
             kan_sekeri = int(kan_sekeri_str)
             if not (20 <= kan_sekeri <= 500):
                 raise ValueError("Kan şekeri 20-500 aralığında olmalıdır.")
-
         except ValueError as e:
             QMessageBox.warning(self, "Hata", str(e))
             return
@@ -51,8 +53,8 @@ class KanSekeriEklemeEkrani(QWidget):
             cursor = conn.cursor()
 
             query = """
-                        INSERT INTO kan_sekeri (hasta_id, tarih_zaman, kan_sekeri)
-                        VALUES (%s, %s, %s)
+                    INSERT INTO olcumler (hasta_id, tarih_zaman, kan_sekeri)
+                    VALUES (%s, %s, %s) \
                     """
             cursor.execute(query, (self.hasta_id, tarih_saat, kan_sekeri))
             conn.commit()

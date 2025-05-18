@@ -3,7 +3,7 @@ import psycopg2
 
 def gun_sonu_analiz_ve_uyari(hasta_id):
     conn = psycopg2.connect(
-        dbname="diabetes_tracking",
+        dbname="diabetes-following-system",
         user="postgres",
         password="veritabani13",
         host="localhost",

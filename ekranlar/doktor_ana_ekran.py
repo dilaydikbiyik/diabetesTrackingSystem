@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QSizePolicy
 from veritabani import baglanti_kur
 from ekranlar.doktor_hasta_ekle import HastaEklemeEkrani
 from ekranlar.kan_sekeri_ekle import KanSekeriEklemeEkrani
@@ -20,7 +21,7 @@ class DoktorAnaEkran(QMainWindow):
         self.doktor_id = doktor_id
         self.setWindowTitle("Doktor Ana Ekranı")
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
-        self.setGeometry(300, 100, 420, 450)
+        self.setGeometry(300, 100, 520, 550)
 
         # Ana widget ve layout
         self.central_widget = QWidget()
@@ -38,8 +39,10 @@ class DoktorAnaEkran(QMainWindow):
             QPushButton {
                 background-color: #007BFF;
                 color: white;
-                padding: 8px;
+                padding: 12px;
                 border-radius: 6px;
+                font-size: 14px;              /* Buton yazı büyüklüğü */
+                font-weight: bold;
             }
             QPushButton:hover {
                 background-color: #0056b3;
@@ -53,11 +56,14 @@ class DoktorAnaEkran(QMainWindow):
 
         # Başlık
         baslik = QLabel("Hastalarınız:")
-        baslik.setFont(QFont("Arial", 11, QFont.Bold))
+        baslik.setFont(QFont("Arial", 13, QFont.Bold))
         self.layout.addWidget(baslik, alignment=Qt.AlignLeft)
 
         # Hasta listesi
         self.hasta_listesi = QListWidget()
+        self.hasta_listesi.setFont(QFont("Arial", 12))  # Yazı büyüklüğü
+        self.hasta_listesi.setMinimumHeight(200)
+        self.hasta_listesi.setMaximumHeight(300)
         self.layout.addWidget(self.hasta_listesi)
 
         # Butonlar
@@ -84,6 +90,11 @@ class DoktorAnaEkran(QMainWindow):
         self.btn_grafik = QPushButton("📈 Kan Şekeri Grafiği")
         self.btn_grafik.clicked.connect(self.kan_sekeri_grafik_ac)
         self.layout.addWidget(self.btn_grafik)
+
+        for btn in [self.btn_detay, self.btn_hasta_ekle, self.btn_kan_sekeri_ekle,
+                    self.btn_egzersiz_ekle, self.btn_diyet_ekle, self.btn_grafik]:
+            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            btn.setMinimumHeight(45)
 
         # Hastaları getir
         self.hastalari_getir()

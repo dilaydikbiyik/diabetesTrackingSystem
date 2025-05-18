@@ -58,10 +58,13 @@ class HastaAnaEkrani(QWidget):
 
     def get_olcumler(self):
         self.cursor.execute("""
-            SELECT tarih_zaman, kan_sekeri FROM olcumler
-            WHERE hasta_id = %s AND tarih_zaman::date = CURRENT_DATE
-            ORDER BY tarih_zaman
-        """, (self.hasta_id,))
+                            SELECT tarih_zaman, kan_sekeri
+                            FROM olcumler
+                            WHERE hasta_id = %s
+                              AND tarih_zaman >= CURRENT_DATE
+                              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
+                            ORDER BY tarih_zaman
+                            """, (self.hasta_id,))
         return self.cursor.fetchall()
 
     def show_olcum_tablosu(self, olcumler):
