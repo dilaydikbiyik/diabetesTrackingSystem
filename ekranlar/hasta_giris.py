@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QMessageBox
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from veritabani import baglanti_kur
 from hashleme import hashle
 
@@ -8,7 +9,34 @@ class HastaGirisEkrani(QWidget):
         super().__init__()
         self.setWindowTitle("Hasta Girişi")
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
-        self.setGeometry(300, 300, 300, 200)
+        self.setGeometry(300, 300, 350, 200)
+        self.setFixedSize(350, 200)
+
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #f8f9fa;
+                font-family: Arial;
+                font-size: 13px;
+            }
+            QLabel {
+                font-weight: bold;
+            }
+            QLineEdit {
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 5px;
+                background-color: white;
+            }
+            QPushButton {
+                background-color: #dc3545;  /* kırmızı */
+                color: white;
+                padding: 8px;
+                border-radius: 6px;
+            }
+            QPushButton:hover {
+                background-color: #c82333;
+            }
+        """)
 
         # TC Kimlik No
         self.lbl_tc = QLabel("TC Kimlik No:", self)
@@ -16,6 +44,7 @@ class HastaGirisEkrani(QWidget):
         self.txt_tc = QLineEdit(self)
         self.txt_tc.move(120, 30)
         self.txt_tc.setPlaceholderText("12345678901")
+        self.txt_tc.setFixedWidth(200)
 
         # Şifre
         self.lbl_sifre = QLabel("Şifre:", self)
@@ -24,10 +53,11 @@ class HastaGirisEkrani(QWidget):
         self.txt_sifre.setEchoMode(QLineEdit.Password)
         self.txt_sifre.move(120, 70)
         self.txt_sifre.setPlaceholderText("Şifrenizi Giriniz")
+        self.txt_sifre.setFixedWidth(200)
 
         # Giriş Butonu
         self.btn_giris = QPushButton("Giriş Yap", self)
-        self.btn_giris.move(120, 110)
+        self.btn_giris.move(120, 120)
         self.btn_giris.clicked.connect(self.giris_yap)
 
     def giris_yap(self):
