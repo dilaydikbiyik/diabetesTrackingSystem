@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QCursor, QColor, QPalette, QLinearGradient, QIcon
 from ekranlar.hasta_giris import HastaGirisEkrani
 from ekranlar.doktor_giris import DoktorGirisEkrani
-
+from ekranlar.yardim_ekrani import YardimPenceresi
 
 class KartFrame(QFrame):
     def __init__(self, baslik, aciklama, icon_path, renk):
@@ -31,21 +31,21 @@ class KartFrame(QFrame):
             ikon_label.setAlignment(Qt.AlignCenter)
 
         # Başlık
-        baslik_label = QLabel(baslik)
-        baslik_label.setStyleSheet("font-size: 16px; font-weight: bold; color: white;")
-        baslik_label.setAlignment(Qt.AlignCenter)
+        self.baslik_label = QLabel(baslik)
+        self.baslik_label.setStyleSheet("font-size: 16px; font-weight: bold; color: white;")
+        self.baslik_label.setAlignment(Qt.AlignCenter)
 
         # Açıklama
-        aciklama_label = QLabel(aciklama)
-        aciklama_label.setStyleSheet("font-size: 12px; color: white; padding: 5px;")
-        aciklama_label.setWordWrap(True)
-        aciklama_label.setAlignment(Qt.AlignCenter)
+        self.aciklama_label = QLabel(aciklama)
+        self.aciklama_label.setStyleSheet("font-size: 12px; color: white; padding: 5px;")
+        self.aciklama_label.setWordWrap(True)
+        self.aciklama_label.setAlignment(Qt.AlignCenter)
 
         # Düzen
         kart_layout = QVBoxLayout()
         kart_layout.addWidget(ikon_label)
-        kart_layout.addWidget(baslik_label)
-        kart_layout.addWidget(aciklama_label)
+        kart_layout.addWidget(self.baslik_label)
+        kart_layout.addWidget(self.aciklama_label)
 
         self.setLayout(kart_layout)
         self.setCursor(QCursor(Qt.PointingHandCursor))
@@ -54,11 +54,40 @@ class KartFrame(QFrame):
 class AnaGirisEkrani(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Diabetes Following System")
+        self.setWindowTitle("Diabetes Tracking System")
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(400, 150, 1000, 700)
 
-        # Arka plan rengi - e-Nabız tarzı gradient
+        # Dil ayarları
+        self.dil_secimi = "Türkçe"
+        self.dil_dict = {
+            "Türkçe": {
+                "baslik": "DİYABET TAKİP SİSTEMİ",
+                "aciklama": "Kişisel diyabet bilgilerinizi yönetebileceğiniz, Türkiye'nin güvenilir sağlık takip sistemidir.",
+                "hasta_girisi": "Hasta Girişi",
+                "hasta_aciklama": "• T.C. Kimlik numaranız ile giriş yapabilirsiniz",
+                "doktor_girisi": "Doktor Girişi",
+                "doktor_aciklama": "• Hekim şifreniz ile giriş yapabilirsiniz",
+                "yardim": "Yardım",
+                "yardim_aciklama": "• Kullanım kılavuzu\n• Sıkça sorulan sorular",
+                "sifremi_unuttum": "Şifremi Unuttum",
+                "iletisim": "Diyabet Takip Sistemi: 0850 000 00 00"
+            },
+            "English": {
+                "baslik": "DIABETES TRACKING SYSTEM",
+                "aciklama": "Manage your diabetes data securely with Turkey's trusted health monitoring system.",
+                "hasta_girisi": "Patient Login",
+                "hasta_aciklama": "• Log in with your National ID",
+                "doktor_girisi": "Doctor Login",
+                "doktor_aciklama": "• Log in with your medical credentials",
+                "yardim": "Help",
+                "yardim_aciklama": "• User guide\n• Frequently asked questions",
+                "sifremi_unuttum": "Forgot Password",
+                "iletisim": "Diabetes Tracking System: 0850 000 00 00"
+            }
+        }
+
+        # Arka plan
         gradient = QLinearGradient(0, 0, 0, self.height())
         gradient.setColorAt(0, QColor("#ffffff"))
         gradient.setColorAt(1, QColor("#f0f7ff"))
@@ -68,28 +97,26 @@ class AnaGirisEkrani(QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-        # Üst kısım - turkuaz şerit oluşturma
+        # Üst bar
         ust_serit = QFrame()
         ust_serit.setFixedHeight(100)
         ust_serit.setStyleSheet("background-color: #42C2BC;")
 
-        # 🔹 Dil seçimi ve logo (sağ üst)
-        dil_combo = QComboBox()
-        dil_combo.addItems(["Türkçe", "English"])
-        dil_combo.setStyleSheet("""
+        self.dil_combo = QComboBox()
+        self.dil_combo.addItems(["Türkçe", "English"])
+        self.dil_combo.setStyleSheet("""
             padding: 8px;
             font-size: 14px;
             border-radius: 5px;
             background-color: white;
             border: 1px solid #ddd;
         """)
+        self.dil_combo.currentIndexChanged.connect(self.dil_degisti)
 
-        # Sağlık Bakanlığı logosu
         saglik_logo = QLabel()
         pixmap = QPixmap("assets/enabiz_logo.png").scaled(220, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         saglik_logo.setPixmap(pixmap)
 
-        # e-Nabız logo ekleme
         enabiz_logo = QLabel()
         enabiz_pixmap = QPixmap("assets/saglik_logo.png").scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         enabiz_logo.setPixmap(enabiz_pixmap)
@@ -97,107 +124,95 @@ class AnaGirisEkrani(QWidget):
         ust_layout = QHBoxLayout(ust_serit)
         ust_layout.addWidget(enabiz_logo)
         ust_layout.addStretch()
-        ust_layout.addWidget(dil_combo)
+        ust_layout.addWidget(self.dil_combo)
         ust_layout.addSpacing(10)
         ust_layout.addWidget(saglik_logo)
         ust_layout.setContentsMargins(20, 10, 20, 10)
 
-        # 🔷 Başlık ve açıklama
-        baslik_container = QFrame()
-        baslik_container.setStyleSheet("background-color: transparent;")
-
-        baslik = QLabel("Diabetes Following System")
-        baslik.setAlignment(Qt.AlignCenter)
-        baslik.setStyleSheet("""
+        # Başlık ve açıklama
+        self.baslik = QLabel()
+        self.baslik.setAlignment(Qt.AlignCenter)
+        self.baslik.setStyleSheet("""
             font-size: 52px;
             font-weight: bold;
             color: #0d47a1;
             margin-top: 20px;
         """)
 
-        aciklama = QLabel(
-            "Kişisel diyabet bilgilerinizi yönetebileceğiniz, Türkiye'nin güvenilir sağlık takip sistemidir.")
-        aciklama.setAlignment(Qt.AlignCenter)
-        aciklama.setStyleSheet("""
+        self.aciklama = QLabel()
+        self.aciklama.setAlignment(Qt.AlignCenter)
+        self.aciklama.setStyleSheet("""
             font-size: 16px; 
             color: #555;
             margin-bottom: 30px;
         """)
 
-        baslik_layout = QVBoxLayout(baslik_container)
-        baslik_layout.addWidget(baslik)
-        baslik_layout.addWidget(aciklama)
+        baslik_layout = QVBoxLayout()
+        baslik_layout.addWidget(self.baslik)
+        baslik_layout.addWidget(self.aciklama)
 
-        # 🔘 Giriş seçenekleri kartları
-        kartlar_container = QFrame()
-        kartlar_container.setStyleSheet("background-color: transparent;")
+        # Kartlar
+        self.hasta_kart = KartFrame("", "", "assets/maske.png", "#e53935")
+        self.hasta_kart.mousePressEvent = lambda event: self.hasta_girisi_ac()
 
-        kartlar_layout = QHBoxLayout(kartlar_container)
+        self.doktor_kart = KartFrame("", "", "assets/steteskop.png", "#1e88e5")
+        self.doktor_kart.mousePressEvent = lambda event: self.doktor_girisi_ac()
 
-        # Hasta girişi kartı
-        hasta_kart = KartFrame(
-            "Hasta Girişi",
-            "• T.C. Kimlik numaranız ile giriş yapabilirsiniz",
-            "assets/maske.png",  # Varsayılan ikon yoksa oluşturmanız gerekebilir
-            "#e53935"  # Kırmızı
-        )
-        hasta_kart.mousePressEvent = lambda event: self.hasta_girisi_ac()
+        self.yardim_kart = KartFrame("", "", "assets/soru_isareti.png", "#42C2BC")
+        self.yardim_kart.mousePressEvent= lambda event : self.yardim_ekrani_ac()
 
-        # Doktor girişi kartı
-        doktor_kart = KartFrame(
-            "Doktor Girişi",
-            "• Hekim şifreniz ile giriş yapabilirsiniz",
-            "assets/steteskop.png",  # Varsayılan ikon yoksa oluşturmanız gerekebilir
-            "#1e88e5"  # Mavi
-        )
-        doktor_kart.mousePressEvent = lambda event: self.doktor_girisi_ac()
-
-        # Yardım kartı
-        yardim_kart = KartFrame(
-            "Yardım",
-            "• Kullanım kılavuzu\n• Sıkça sorulan sorular",
-            "assets/soru_isareti.png",  # Varsayılan ikon yoksa oluşturmanız gerekebilir
-            "#42C2BC"  # Turkuaz
-        )
-
+        kartlar_layout = QHBoxLayout()
         kartlar_layout.addStretch()
-        kartlar_layout.addWidget(hasta_kart)
+        kartlar_layout.addWidget(self.hasta_kart)
         kartlar_layout.addSpacing(20)
-        kartlar_layout.addWidget(doktor_kart)
+        kartlar_layout.addWidget(self.doktor_kart)
         kartlar_layout.addSpacing(20)
-        kartlar_layout.addWidget(yardim_kart)
+        kartlar_layout.addWidget(self.yardim_kart)
         kartlar_layout.addStretch()
 
-        # 🔗 Alt bilgi
-        alt_bilgi = QFrame()
-        alt_bilgi.setFixedHeight(60)
-        alt_bilgi.setStyleSheet("background-color: transparent; margin-top: 30px;")
+        # Alt bilgi
+        self.sifre_label = QLabel()
+        self.sifre_label.setOpenExternalLinks(True)
+        self.sifre_label.setAlignment(Qt.AlignCenter)
+        self.sifre_label.setStyleSheet("color: #0d47a1; font-size: 14px;")
+        self.sifre_label.setCursor(QCursor(Qt.PointingHandCursor))
 
-        sifre_label = QLabel('<a href="#">Şifremi Unuttum</a>')
-        sifre_label.setOpenExternalLinks(True)
-        sifre_label.setAlignment(Qt.AlignCenter)
-        sifre_label.setStyleSheet("color: #0d47a1; font-size: 14px;")
-        sifre_label.setCursor(QCursor(Qt.PointingHandCursor))
+        self.iletisim_label = QLabel()
+        self.iletisim_label.setAlignment(Qt.AlignCenter)
+        self.iletisim_label.setStyleSheet("color: #555; font-size: 14px;")
 
-        iletisim_label = QLabel("Diabetes Following System: 0850 000 00 00")
-        iletisim_label.setAlignment(Qt.AlignCenter)
-        iletisim_label.setStyleSheet("color: #555; font-size: 14px;")
+        alt_layout = QVBoxLayout()
+        alt_layout.addWidget(self.sifre_label)
+        alt_layout.addWidget(self.iletisim_label)
 
-        alt_layout = QVBoxLayout(alt_bilgi)
-        alt_layout.addWidget(sifre_label)
-        alt_layout.addWidget(iletisim_label)
-
-        # 🔧 Ana dikey düzen
+        # Ana düzen
         ana_layout = QVBoxLayout()
         ana_layout.addWidget(ust_serit)
         ana_layout.addSpacing(10)
-        ana_layout.addWidget(baslik_container)
-        ana_layout.addWidget(kartlar_container)
-        ana_layout.addWidget(alt_bilgi)
+        ana_layout.addLayout(baslik_layout)
+        ana_layout.addLayout(kartlar_layout)
+        ana_layout.addLayout(alt_layout)
         ana_layout.setContentsMargins(0, 0, 0, 0)
         ana_layout.setSpacing(10)
 
         self.setLayout(ana_layout)
+
+        self.dil_degisti()  # Varsayılan dil ile başlat
+
+    def dil_degisti(self):
+        dil = self.dil_combo.currentText()
+        secim = self.dil_dict[dil]
+
+        self.baslik.setText(secim["baslik"])
+        self.aciklama.setText(secim["aciklama"])
+        self.hasta_kart.baslik_label.setText(secim["hasta_girisi"])
+        self.hasta_kart.aciklama_label.setText(secim["hasta_aciklama"])
+        self.doktor_kart.baslik_label.setText(secim["doktor_girisi"])
+        self.doktor_kart.aciklama_label.setText(secim["doktor_aciklama"])
+        self.yardim_kart.baslik_label.setText(secim["yardim"])
+        self.yardim_kart.aciklama_label.setText(secim["yardim_aciklama"])
+        self.sifre_label.setText(f'<a href="#">{secim["sifremi_unuttum"]}</a>')
+        self.iletisim_label.setText(secim["iletisim"])
 
     def hasta_girisi_ac(self):
         self.hasta_pencere = HastaGirisEkrani()
@@ -206,3 +221,7 @@ class AnaGirisEkrani(QWidget):
     def doktor_girisi_ac(self):
         self.doktor_pencere = DoktorGirisEkrani()
         self.doktor_pencere.show()
+
+    def yardim_ekrani_ac(self):
+        self.yardim_pencere = YardimPenceresi(dil=self.dil_combo.currentText())
+        self.yardim_pencere.show()

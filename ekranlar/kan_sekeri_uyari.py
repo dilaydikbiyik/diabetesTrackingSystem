@@ -5,7 +5,7 @@ def gun_sonu_analiz_ve_uyari(hasta_id):
     conn = psycopg2.connect(
         dbname="diabetes-following-system",
         user="postgres",
-        password="veritabani13",
+        password="merve813",
         host="localhost",
         port="5432"
     )
