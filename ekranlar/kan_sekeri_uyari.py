@@ -3,7 +3,7 @@ from veritabani import baglanti_kur
 import psycopg2
 
 def gun_sonu_analiz_ve_uyari(hasta_id):
-    conn = baglanti_kur()  
+    conn = baglanti_kur()
     if conn is None:
         return
 
