@@ -1,14 +1,12 @@
 from datetime import datetime, timedelta
+from veritabani import baglanti_kur
 import psycopg2
 
 def gun_sonu_analiz_ve_uyari(hasta_id):
-    conn = psycopg2.connect(
-        dbname="diabetes-following-system",
-        user="postgres",
-        password="merve813",
-        host="localhost",
-        port="5432"
-    )
+    conn = baglanti_kur()  
+    if conn is None:
+        return
+
     cur = conn.cursor()
 
     bugun = datetime.now().date()
