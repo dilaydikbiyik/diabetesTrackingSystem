@@ -71,7 +71,7 @@ class AnaGirisEkrani(QWidget):
                 "doktor_aciklama": "• Hekim şifreniz ile giriş yapabilirsiniz",
                 "yardim": "Yardım",
                 "yardim_aciklama": "• Kullanım kılavuzu\n• Sıkça sorulan sorular",
-                "sifremi_unuttum": "Şifremi Unuttum",
+                "sifremi_unuttum": "🔐 Şifremi Unuttum",
                 "iletisim": "Diyabet Takip Sistemi: 0850 000 00 00"
             },
             "English": {
@@ -83,7 +83,7 @@ class AnaGirisEkrani(QWidget):
                 "doktor_aciklama": "• Log in with your medical credentials",
                 "yardim": "Help",
                 "yardim_aciklama": "• User guide\n• Frequently asked questions",
-                "sifremi_unuttum": "Forgot Password",
+                "sifremi_unuttum": "🔐 Forgot Password",
                 "iletisim": "Diabetes Tracking System: 0850 000 00 00"
             }
         }

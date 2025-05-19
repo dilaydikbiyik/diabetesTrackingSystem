@@ -4,8 +4,12 @@ import random
 import string
 import smtplib
 import psycopg2
-from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QPushButton, QMessageBox,
-                             QVBoxLayout, QApplication)
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QLineEdit, QPushButton, QMessageBox,
+    QVBoxLayout, QApplication
+)
+from PyQt5.QtGui import QFont, QPalette, QColor
+from PyQt5.QtCore import Qt
 from email.mime.text import MIMEText
 
 from veritabani import baglanti_kur
@@ -27,9 +31,9 @@ def hashle(sifre):
 
 
 def mail_gonder(alici_email, yeni_sifre):
-    mesaj = MIMEText(f"Yeni şifreniz: {yeni_sifre}\nLütfen giris yaptiktan sonra degistirin.")
+    mesaj = MIMEText(f"Yeni şifreniz: {yeni_sifre}\nLütfen giriş yaptıktan sonra değiştirin.")
     mesaj["Subject"] = "Diyabet Takip Sistemi - Şifre Sıfırlama"
-    mesaj["From"] = "merome813@gmail.com"  # kendi gmail adresin
+    mesaj["From"] = "merome813@gmail.com"
     mesaj["To"] = alici_email
 
     try:
@@ -47,16 +51,47 @@ def mail_gonder(alici_email, yeni_sifre):
 class SifreSifirlaEkrani(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Şifremi Unuttum")
-        self.setGeometry(500, 300, 350, 150)
+        self.setWindowTitle("🔐 Şifremi Unuttum")
+        self.setGeometry(500, 300, 400, 180)
+
+        # Arka plan rengi ve yazı tipi
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor("#e6f0fa"))  # Açık mavi
+        self.setPalette(palette)
+
+        self.setFont(QFont("Arial", 10))
 
         self.layout = QVBoxLayout()
 
         self.label = QLabel("TC Kimlik Numaranızı Girin:")
-        self.txt_tc = QLineEdit()
-        self.txt_tc.setPlaceholderText("12345678901")
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setStyleSheet("color: #003366; font-weight: bold;")
 
-        self.btn_gonder = QPushButton("Şifreyi Yenile")
+        self.txt_tc = QLineEdit()
+        self.txt_tc.setPlaceholderText("Örn: 12345678901")
+        self.txt_tc.setMaxLength(11)
+        self.txt_tc.setStyleSheet("""
+            QLineEdit {
+                padding: 6px;
+                border: 1px solid #99ccff;
+                border-radius: 5px;
+                background-color: white;
+            }
+        """)
+
+        self.btn_gonder = QPushButton("📧 Şifreyi Yenile")
+        self.btn_gonder.setStyleSheet("""
+            QPushButton {
+                background-color: #3399ff;
+                color: white;
+                padding: 8px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #007acc;
+            }
+        """)
         self.btn_gonder.clicked.connect(self.sifre_yenile)
 
         self.layout.addWidget(self.label)
@@ -82,10 +117,35 @@ class SifreSifirlaEkrani(QWidget):
                     kullanici_id, email = sonuc
                     gizli = gizle_email(email)
 
-                    onay = QMessageBox.question(self, "Onay",
-                                                 f"{gizli} adresine şifre sıfırlama bağlantısı gönderilsin mi?",
-                                                 QMessageBox.Yes | QMessageBox.No)
-                    if onay == QMessageBox.Yes:
+                    onay = QMessageBox(self)
+                    onay.setWindowTitle("Onay")
+                    onay.setText(f"{gizli} adresine şifre sıfırlama bağlantısı gönderilsin mi?")
+                    onay.setIcon(QMessageBox.Question)
+                    onay.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                    onay.setStyleSheet("""
+                        QMessageBox {
+                            background-color: #f0f8ff;
+                            font-family: Arial;
+                        }
+                        QLabel {
+                            color: #003366;
+                            font-size: 12pt;
+                        }
+                        QPushButton {
+                            background-color: #3399ff;
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 4px;
+                            font-weight: bold;
+                            min-width: 80px;
+                        }
+                        QPushButton:hover {
+                            background-color: #007acc;
+                        }
+                    """)
+
+                    cevap = onay.exec_()
+                    if cevap == QMessageBox.Yes:
                         yeni_sifre = yeni_sifre_uret()
                         hashed = hashle(yeni_sifre)
 
