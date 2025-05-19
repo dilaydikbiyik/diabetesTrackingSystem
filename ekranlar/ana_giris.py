@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPixmap, QCursor, QColor, QPalette, QLinearGradient, QIc
 from ekranlar.hasta_giris import HastaGirisEkrani
 from ekranlar.doktor_giris import DoktorGirisEkrani
 from ekranlar.yardim_ekrani import YardimPenceresi
+from ekranlar.sifre_sifirla import SifreSifirlaEkrani
 
 class KartFrame(QFrame):
     def __init__(self, baslik, aciklama, icon_path, renk):
@@ -176,6 +177,7 @@ class AnaGirisEkrani(QWidget):
         self.sifre_label.setAlignment(Qt.AlignCenter)
         self.sifre_label.setStyleSheet("color: #0d47a1; font-size: 14px;")
         self.sifre_label.setCursor(QCursor(Qt.PointingHandCursor))
+        self.sifre_label.mousePressEvent = lambda event: self.sifre_sifirlama_ac()
 
         self.iletisim_label = QLabel()
         self.iletisim_label.setAlignment(Qt.AlignCenter)
@@ -225,3 +227,7 @@ class AnaGirisEkrani(QWidget):
     def yardim_ekrani_ac(self):
         self.yardim_pencere = YardimPenceresi(dil=self.dil_combo.currentText())
         self.yardim_pencere.show()
+
+    def sifre_sifirlama_ac(self):
+        self.sifre_pencere = SifreSifirlaEkrani()
+        self.sifre_pencere.show()
