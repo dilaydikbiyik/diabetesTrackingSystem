@@ -5,17 +5,20 @@ from ekranlar.hasta_giris import HastaGirisEkrani
 from ekranlar.doktor_giris import DoktorGirisEkrani
 from ekranlar.yardim_ekrani import YardimPenceresi
 from ekranlar.sifre_sifirla import SifreSifirlaEkrani
+import webbrowser
 
 class KartFrame(QFrame):
     def __init__(self, baslik, aciklama, icon_path, renk):
         super().__init__()
-        self.setFixedSize(220, 200)
+        self.setFixedSize(220, 220)
+        self.setCursor(QCursor(Qt.PointingHandCursor))
+
+        # Stil
         self.setStyleSheet(f"""
             QFrame {{
                 background-color: {renk};
-                border-radius: 12px;
+                border-radius: 16px;
                 color: white;
-                padding: 15px;
             }}
             QFrame:hover {{
                 background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, 
@@ -24,32 +27,36 @@ class KartFrame(QFrame):
             }}
         """)
 
-        # İkon
+        # Simge
         ikon_label = QLabel()
         if icon_path:
-            ikon = QPixmap(icon_path).scaled(60, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            ikon = QPixmap(icon_path).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             ikon_label.setPixmap(ikon)
             ikon_label.setAlignment(Qt.AlignCenter)
+            ikon_label.setStyleSheet("background: transparent;")
 
         # Başlık
         self.baslik_label = QLabel(baslik)
-        self.baslik_label.setStyleSheet("font-size: 16px; font-weight: bold; color: white;")
         self.baslik_label.setAlignment(Qt.AlignCenter)
+        self.baslik_label.setStyleSheet("font-size: 16px; font-weight: bold; color: white;")
 
         # Açıklama
         self.aciklama_label = QLabel(aciklama)
-        self.aciklama_label.setStyleSheet("font-size: 12px; color: white; padding: 5px;")
-        self.aciklama_label.setWordWrap(True)
         self.aciklama_label.setAlignment(Qt.AlignCenter)
+        self.aciklama_label.setWordWrap(True)
+        self.aciklama_label.setStyleSheet("font-size: 12px; color: white;")
 
-        # Düzen
-        kart_layout = QVBoxLayout()
-        kart_layout.addWidget(ikon_label)
-        kart_layout.addWidget(self.baslik_label)
-        kart_layout.addWidget(self.aciklama_label)
+        # Hepsi bir düzen içinde
+        layout = QVBoxLayout()
+        layout.setSpacing(10)
+        layout.setContentsMargins(10, 15, 10, 15)
+        layout.setAlignment(Qt.AlignCenter)
 
-        self.setLayout(kart_layout)
-        self.setCursor(QCursor(Qt.PointingHandCursor))
+        layout.addWidget(ikon_label)
+        layout.addWidget(self.baslik_label)
+        layout.addWidget(self.aciklama_label)
+
+        self.setLayout(layout)
 
 
 class AnaGirisEkrani(QWidget):
@@ -179,9 +186,20 @@ class AnaGirisEkrani(QWidget):
         self.sifre_label.setCursor(QCursor(Qt.PointingHandCursor))
         self.sifre_label.mousePressEvent = lambda event: self.sifre_sifirlama_ac()
 
-        self.iletisim_label = QLabel()
+        self.iletisim_label = QLabel("Diyabet Takip Sistemi: 0850 000 00 00")
         self.iletisim_label.setAlignment(Qt.AlignCenter)
-        self.iletisim_label.setStyleSheet("color: #555; font-size: 14px;")
+        self.iletisim_label.setStyleSheet("""
+            QLabel {
+                color: #555;
+                font-size: 14px;
+                text-decoration: underline;
+            }
+            QLabel:hover {
+                color: #0d47a1;
+            }
+        """)
+        self.iletisim_label.setCursor(QCursor(Qt.PointingHandCursor))
+        self.iletisim_label.mousePressEvent = lambda event: webbrowser.open("tel:08500000000")
 
         alt_layout = QVBoxLayout()
         alt_layout.addWidget(self.sifre_label)
