@@ -91,6 +91,10 @@ class DoktorAnaEkran(QMainWindow):
         self.btn_grafik.clicked.connect(self.kan_sekeri_grafik_ac)
         self.layout.addWidget(self.btn_grafik)
 
+        self.btn_hastalik_teshisi = QPushButton("🩺 Hastalık Teşhisi")
+        self.btn_hastalik_teshisi.clicked.connect(self.hastalik_teshisi_ekranini_ac)
+        self.layout.addWidget(self.btn_hastalik_teshisi)
+
         for btn in [self.btn_detay, self.btn_hasta_ekle, self.btn_kan_sekeri_ekle,
                     self.btn_egzersiz_ekle, self.btn_diyet_ekle, self.btn_grafik]:
             btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -191,6 +195,15 @@ class DoktorAnaEkran(QMainWindow):
         self.grafik_pencere = KanSekeriGrafik(hasta_id)
         self.grafik_pencere.show()
 
+    def hastalik_teshisi_ekranini_ac(self):
+        if not self.hasta_listesi.currentItem():
+            QMessageBox.warning(self, "Hata", "Lütfen bir hasta seçiniz!")
+            return
+
+        hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
+        from ekranlar.hastalik_teshisi import HastalikTeshisiEkrani
+        self.teshis_pencere = HastalikTeshisiEkrani(hasta_id)
+        self.teshis_pencere.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
