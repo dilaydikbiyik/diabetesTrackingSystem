@@ -59,38 +59,38 @@ class YardimPenceresi(QWidget):
                 "Bu sistem, doktorların hastalarının diyabet verilerini takip etmesini sağlar.</p>"
                 "<p><b style='color: #3498db;'>🔸 Giriş Yapma:</b><br>"
                 "Kullanıcı adınızı ve şifrenizi girerek sisteme giriş yapabilirsiniz.</p>"
-                "<p><b style='color: #3498db;'>🔸 Doktor İşlevleri:</b><br>"
+                "<p><b style='color: #3498db;'>🩺 Doktor İşlevleri:</b><br>"
                 "- Hasta ekleyebilir<br>"
                 "- Kan şekeri verilerini inceleyebilir<br>"
                 "- Egzersiz ve diyet bilgilerini takip edebilir<br>"
                 "- Teşhis ve öneriler oluşturabilir</p>"
-                "<p><b style='color: #3498db;'>🔸 Hasta İşlevleri:</b><br>"
+                "<p><b style='color: #3498db;'>😷 Hasta İşlevleri:</b><br>"
                 "- Sadece kendi bilgilerini görüntüleyebilir<br>"
                 "- Ölçüm verilerini girebilir</p>"
-                "<p><b style='color: #2ecc71;'>📌 Güvenlik:</b><br>"
+                "<p><b style='color: #2ecc71;'>🔒 Güvenlik:</b><br>"
                 "Giriş bilgileriniz sistem tarafından şifrelenerek korunur.</p>"
-                "<p><b style='color: #e74c3c;'>❓ Destek:</b><br>"
-                "Yardım hattı: <b>0850 000 00 00</b></p>"
+                "<p><b style='color: #e74c3c;'>📞 Destek:</b><br>"
+                "Yardım hattı: <a href='#' style='color: black; font-weight: bold;'>0850 000 00 00</a></p>"
             )
         else:
             icerik = (
-                "<h3 style='color: #3498db;'>Diabetes Monitoring System Help</h3>"
+                "<h3 style='color: #3498db;'>Diabetes Tracking System Help</h3>"
                 "<p><b style='color: #3498db;'>🔹 About the System:</b><br>"
                 "This system allows doctors to monitor their patients' diabetes data.</p>"
                 "<p><b style='color: #3498db;'>🔸 Logging In:</b><br>"
                 "Enter your username and password to log in.</p>"
-                "<p><b style='color: #3498db;'>🔸 Doctor Functions:</b><br>"
+                "<p><b style='color: #3498db;'>🩺 Doctor Functions:</b><br>"
                 "- Add patients<br>"
                 "- View and analyze blood sugar data<br>"
                 "- Track exercise and diet info<br>"
                 "- Provide recommendations</p>"
-                "<p><b style='color: #3498db;'>🔸 Patient Functions:</b><br>"
+                "<p><b style='color: #3498db;'>😷 Patient Functions:</b><br>"
                 "- View only their own records<br>"
                 "- Submit measurement data</p>"
-                "<p><b style='color: #2ecc71;'>📌 Security:</b><br>"
+                "<p><b style='color: #2ecc71;'>🔒 Security:</b><br>"
                 "Login information is encrypted for your protection.</p>"
-                "<p><b style='color: #e74c3c;'>❓ Support:</b><br>"
-                "Support line: <b>0850 000 00 00</b></p>"
+                "<p><b style='color: #e74c3c;'>📞 Support:</b><br>"
+                "Support line: <a href='#' style='color: black; font-weight: bold;'>0850 000 00 00</a></p>"
             )
 
         self.text_area.setHtml(icerik)
@@ -99,7 +99,7 @@ class YardimPenceresi(QWidget):
 
         # Footer
         footer_label = QLabel(
-            "© 2025 Diyabet Takip Sistemi" if self.dil == "Türkçe" else "© 2025 Diabetes Monitoring System")
+            "© 2025 Diyabet Takip Sistemi" if self.dil == "Türkçe" else "© 2025 Diabetes Tracking System")
         footer_label.setAlignment(Qt.AlignCenter)
         footer_label.setStyleSheet("color: #7f8c8d; font-size: 11px;")
         main_layout.addWidget(footer_label)
