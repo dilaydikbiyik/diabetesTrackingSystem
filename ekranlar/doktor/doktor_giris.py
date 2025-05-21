@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 from veritabani import baglanti_kur
 from hashleme import hashle
-from ekranlar.doktor_ana_ekran import DoktorAnaEkran
+from ekranlar.doktor.doktor_ana_ekran import DoktorAnaEkran
 
 class DoktorGirisEkrani(QWidget):
     def __init__(self):

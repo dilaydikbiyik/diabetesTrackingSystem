@@ -3,6 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from veritabani import baglanti_kur
 from hashleme import hashle
+from ekranlar.hasta.hasta_ana_ekran import HastaAnaEkrani
 
 class HastaGirisEkrani(QWidget):
     def __init__(self):
@@ -92,7 +93,7 @@ class HastaGirisEkrani(QWidget):
                     ad, soyad = result
                     QMessageBox.information(self, "Başarılı", f"Hoş geldiniz, {ad} {soyad}")
                     # 🔽 Burada yeni ekranı açıyoruz
-                    from ekranlar.hasta_ana_ekran import HastaAnaEkrani  # konuma göre ayarla
+
                     self.hasta_ekrani = HastaAnaEkrani(ad, soyad, tc)
                     self.hasta_ekrani.show()
                     self.close()  # Giriş ekranını kapat

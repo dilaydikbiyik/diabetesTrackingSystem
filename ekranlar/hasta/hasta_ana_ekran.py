@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont, QIcon
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from datetime import datetime
-from veritabani import baglanti_kur  # ← veritabanı bağlantı fonksiyonun
+from veritabani import baglanti_kur
 import psycopg2
 
 class HastaAnaEkrani(QWidget):

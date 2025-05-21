@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QComboBox, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QCursor, QColor, QPalette, QLinearGradient, QIcon
-from ekranlar.hasta_giris import HastaGirisEkrani
-from ekranlar.doktor_giris import DoktorGirisEkrani
-from ekranlar.yardim_ekrani import YardimPenceresi
-from ekranlar.sifre_sifirla import SifreSifirlaEkrani
-import webbrowser
+from ekranlar.hasta.hasta_giris import HastaGirisEkrani
+from ekranlar.doktor.doktor_giris import DoktorGirisEkrani
+from ekranlar.ana.yardim_ekrani import YardimPenceresi
+from ekranlar.ana.sifre_sifirla import SifreSifirlaEkrani
+from ekranlar.ana.arama_ekrani import AramaEkrani
 
 class KartFrame(QFrame):
     def __init__(self, baslik, aciklama, icon_path, renk):
@@ -199,7 +199,8 @@ class AnaGirisEkrani(QWidget):
             }
         """)
         self.iletisim_label.setCursor(QCursor(Qt.PointingHandCursor))
-        self.iletisim_label.mousePressEvent = lambda event: webbrowser.open("tel:08500000000")
+        self.iletisim_label.mousePressEvent = lambda event: self.arama_ekranini_ac()
+
 
         alt_layout = QVBoxLayout()
         alt_layout.addWidget(self.sifre_label)
@@ -249,3 +250,7 @@ class AnaGirisEkrani(QWidget):
     def sifre_sifirlama_ac(self):
         self.sifre_pencere = SifreSifirlaEkrani()
         self.sifre_pencere.show()
+
+    def arama_ekranini_ac(self):
+        self.arama_pencere = AramaEkrani()
+        self.arama_pencere.show()

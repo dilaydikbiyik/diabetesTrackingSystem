@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout,
                              QMessageBox, QFrame, QSplitter)
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt
-from veritabani import baglanti_kur  # 🔁 PostgreSQL bağlantısı için
+from veritabani import baglanti_kur
 import datetime
 
 

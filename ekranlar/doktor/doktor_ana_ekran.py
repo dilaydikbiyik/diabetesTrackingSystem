@@ -8,11 +8,11 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSizePolicy
 from veritabani import baglanti_kur
-from ekranlar.doktor_hasta_ekle import HastaEklemeEkrani
-from ekranlar.kan_sekeri_ekle import KanSekeriEklemeEkrani
-from ekranlar.egzersiz_ekle import EgzersizEklemeEkrani
-from ekranlar.diyet_ekle import DiyetEklemeEkrani
-from ekranlar.kan_sekeri_grafik import KanSekeriGrafik
+from ekranlar.doktor.doktor_hasta_ekle import HastaEklemeEkrani
+from ekranlar.kan_sekeri.kan_sekeri_ekle import KanSekeriEklemeEkrani
+from ekranlar.doktor.egzersiz_ekle import EgzersizEklemeEkrani
+from ekranlar.doktor.diyet_ekle import DiyetEklemeEkrani
+from ekranlar.kan_sekeri.kan_sekeri_grafik import KanSekeriGrafik
 
 
 class DoktorAnaEkran(QMainWindow):
@@ -201,7 +201,7 @@ class DoktorAnaEkran(QMainWindow):
             return
 
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        from ekranlar.hastalik_teshisi import HastalikTeshisiEkrani
+        from ekranlar.doktor.hastalik_teshisi import HastalikTeshisiEkrani
         self.teshis_pencere = HastalikTeshisiEkrani(hasta_id)
         self.teshis_pencere.show()
 
