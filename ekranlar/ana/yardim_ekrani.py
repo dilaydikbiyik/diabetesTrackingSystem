@@ -24,7 +24,7 @@ class YardimPenceresi(QWidget):
         header_frame.setStyleSheet("background-color: #3498db; border-radius: 10px;")
         header_layout = QHBoxLayout(header_frame)
 
-        title_text = "Diyabet Takip Sistemi Yardım" if self.dil == "Türkçe" else "Diabetes Monitoring System Help"
+        title_text = "Diyabet Takip Sistemi Yardım" if self.dil == "Türkçe" else "Diabetes Tracking System Help"
         baslik = QLabel(title_text)
         baslik.setFont(QFont("Arial", 16, QFont.Bold))
         baslik.setStyleSheet("color: white;")
