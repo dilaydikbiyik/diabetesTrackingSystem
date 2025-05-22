@@ -34,6 +34,7 @@ class KanSekeriEklemeEkrani(QWidget):
     def kan_sekeri_ekle(self):
         tarih_saat = self.dt_tarih_saat.dateTime().toPyDateTime()
         tarih_saat = pytz.timezone("Europe/Istanbul").localize(tarih_saat)
+
         kan_sekeri_str = self.txt_kan_sekeri.text()
 
         if not kan_sekeri_str:
@@ -53,9 +54,9 @@ class KanSekeriEklemeEkrani(QWidget):
             cursor = conn.cursor()
 
             query = """
-                    INSERT INTO olcumler (hasta_id, tarih_zaman, kan_sekeri)
-                    VALUES (%s, %s, %s) \
-                    """
+                INSERT INTO kan_sekeri (hasta_id, tarih_zaman, kan_sekeri)
+                VALUES (%s, %s, %s)
+            """
             cursor.execute(query, (self.hasta_id, tarih_saat, kan_sekeri))
             conn.commit()
 

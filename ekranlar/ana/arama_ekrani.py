@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtCore import Qt
 
 class AramaEkrani(QWidget):
-    def __init__(self, numara="08500000000"):
+    def __init__(self, numara="0850 000 00 00"):
         super().__init__()
         self.setWindowTitle("Arama Ekranı")
         self.setFixedSize(300, 500)

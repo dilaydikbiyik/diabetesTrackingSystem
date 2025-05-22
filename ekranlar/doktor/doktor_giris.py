@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QMessageBox, QWidget
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from veritabani import baglanti_kur
 from hashleme import hashle
 from ekranlar.doktor.doktor_ana_ekran import DoktorAnaEkran
@@ -62,34 +61,40 @@ class DoktorGirisEkrani(QWidget):
         self.btn_giris.clicked.connect(self.giris_yap)
 
     def giris_yap(self):
-        tc = self.txt_tc.text()
-        sifre = self.txt_sifre.text()
+        tc = self.txt_tc.text().strip()
+        sifre = self.txt_sifre.text().strip()
 
         if not tc or not sifre:
-            QMessageBox.warning(self, "Hata", "Lütfen tüm alanları doldurun!")
+            QMessageBox.warning(self, "Uyarı", "Lütfen TC ve şifre alanlarını doldurun!")
             return
 
         hashed_sifre = hashle(sifre)
         conn = baglanti_kur()
 
-        if conn:
-            try:
-                cursor = conn.cursor()
-                query = "SELECT id, ad, soyad FROM doktorlar WHERE tc = %s AND sifre = %s"
-                cursor.execute(query, (tc, hashed_sifre))
-                result = cursor.fetchone()
+        if not conn:
+            QMessageBox.critical(self, "Hata", "Veritabanı bağlantısı kurulamadı!")
+            return
 
-                if result:
-                    doktor_id, ad, soyad = result
-                    QMessageBox.information(self, "Başarılı", f"Hoşgeldiniz, Dr. {ad} {soyad}")
-                    self.doktor_ana_ekran = DoktorAnaEkran(doktor_id=doktor_id)
-                    self.doktor_ana_ekran.show()
-                    self.close()
-                else:
-                    QMessageBox.warning(self, "Hata", "Doktor bulunamadı!")
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT id, ad, soyad FROM doktorlar
+                WHERE tc = %s AND sifre = %s
+            """
+            cursor.execute(query, (tc, hashed_sifre))
+            result = cursor.fetchone()
 
-                cursor.close()
-                conn.close()
+            if result:
+                doktor_id, ad, soyad = result
+                QMessageBox.information(self, "Giriş Başarılı", f"Hoşgeldiniz, Dr. {ad} {soyad}")
+                self.doktor_ana_ekran = DoktorAnaEkran(doktor_id)
+                self.doktor_ana_ekran.show()
+                self.close()
+            else:
+                QMessageBox.warning(self, "Hata", "Geçersiz TC veya şifre!")
 
-            except Exception as e:
-                QMessageBox.critical(self, "Hata", f"Bağlantı hatası: {e}")
+            cursor.close()
+            conn.close()
+
+        except Exception as e:
+            QMessageBox.critical(self, "Hata", f"Veritabanı hatası:\n{e}")

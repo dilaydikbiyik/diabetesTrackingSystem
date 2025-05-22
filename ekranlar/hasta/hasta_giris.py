@@ -29,7 +29,7 @@ class HastaGirisEkrani(QWidget):
                 background-color: white;
             }
             QPushButton {
-                background-color: #dc3545;  /* kırmızı */
+                background-color: #dc3545;
                 color: white;
                 padding: 8px;
                 border-radius: 6px;
@@ -62,23 +62,16 @@ class HastaGirisEkrani(QWidget):
         self.btn_giris.clicked.connect(self.giris_yap)
 
     def giris_yap(self):
-        """
-        Giriş yap butonuna tıklandığında çalışır.
-        Kullanıcıdan alınan TC ve şifre bilgilerini kontrol eder.
-        """
-        tc = self.txt_tc.text()
-        sifre = self.txt_sifre.text()
+        tc = self.txt_tc.text().strip()
+        sifre = self.txt_sifre.text().strip()
 
-        # Alanların boş olup olmadığını kontrol et
         if not tc or not sifre:
             QMessageBox.warning(self, "Hata", "Lütfen tüm alanları doldurun!")
             return
 
-        # Şifreyi hashle
         hashed_sifre = hashle(sifre)
-
-        # Veritabanı bağlantısı
         conn = baglanti_kur()
+
         if conn:
             try:
                 cursor = conn.cursor()
@@ -92,16 +85,16 @@ class HastaGirisEkrani(QWidget):
                 if result:
                     ad, soyad = result
                     QMessageBox.information(self, "Başarılı", f"Hoş geldiniz, {ad} {soyad}")
-                    # 🔽 Burada yeni ekranı açıyoruz
-
                     self.hasta_ekrani = HastaAnaEkrani(ad, soyad, tc)
                     self.hasta_ekrani.show()
-                    self.close()  # Giriş ekranını kapat
+                    self.close()
                 else:
-                    QMessageBox.warning(self, "Hata", "Hasta bulunamadı!")
+                    QMessageBox.warning(self, "Hata", "Giriş bilgileri hatalı veya hasta bulunamadı.")
 
                 cursor.close()
                 conn.close()
 
             except Exception as e:
-                QMessageBox.critical(self, "Hata", f"Bağlantı hatası: {e}")
+                QMessageBox.critical(self, "Hata", f"Veritabanı hatası:\n{e}")
+        else:
+            QMessageBox.critical(self, "Bağlantı Hatası", "Veritabanı bağlantısı sağlanamadı.")

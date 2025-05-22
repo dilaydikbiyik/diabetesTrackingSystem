@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QTextEdit
-from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QTextEdit, QHBoxLayout
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from datetime import datetime
 from veritabani import baglanti_kur
-import psycopg2
 
 class HastaAnaEkrani(QWidget):
     def __init__(self, ad, soyad, tc):
@@ -19,29 +19,52 @@ class HastaAnaEkrani(QWidget):
 
         self.conn = baglanti_kur()
         self.cursor = self.conn.cursor()
-
-        self.hasta_id = self.get_hasta_id()
         self.layout = QVBoxLayout()
 
         self.init_ui()
         self.setLayout(self.layout)
 
-    def get_hasta_id(self):
-        self.cursor.execute("SELECT id FROM hastalar WHERE tc = %s", (self.tc,))
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+    def get_hasta_bilgileri(self):
+        self.cursor.execute("""
+            SELECT id, ad, soyad, email, profil_resmi
+            FROM hastalar
+            WHERE tc = %s
+        """, (self.tc,))
+        return self.cursor.fetchone()
 
     def init_ui(self):
-        if not self.hasta_id:
+        bilgiler = self.get_hasta_bilgileri()
+        if not bilgiler:
             self.layout.addWidget(QLabel("Hasta bilgisi bulunamadı."))
             return
 
-        # Hoş geldin
-        hosgeldin = QLabel(f"👋 Hoş geldiniz, {self.ad} {self.soyad}!")
-        hosgeldin.setStyleSheet("color: green; font-weight: bold; font-size: 18px")
-        self.layout.addWidget(hosgeldin)
+        self.hasta_id, ad, soyad, email, profil_resmi = bilgiler
 
-        # Ölçüm verilerini al ve tablo oluştur
+        # Bilgi köşesi
+        hasta_bilgi_layout = QHBoxLayout()
+        self.lbl_resim = QLabel()
+        self.lbl_resim.setFixedSize(80, 80)
+        self.lbl_resim.setStyleSheet("border: 1px solid #ccc; background-color: white;")
+
+        if profil_resmi:
+            pixmap = QPixmap()
+            pixmap.loadFromData(profil_resmi)
+            self.lbl_resim.setPixmap(pixmap.scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+        ad_label = QLabel(f"👤 {ad} {soyad}")
+        ad_label.setFont(QFont("Arial", 11, QFont.Bold))
+        mail_label = QLabel(f"📧 {email}")
+        mail_label.setFont(QFont("Arial", 10))
+
+        info_box = QVBoxLayout()
+        info_box.addWidget(ad_label)
+        info_box.addWidget(mail_label)
+
+        hasta_bilgi_layout.addWidget(self.lbl_resim)
+        hasta_bilgi_layout.addLayout(info_box)
+        self.layout.addLayout(hasta_bilgi_layout)
+
+        # Ölçümler
         olcumler = self.get_olcumler()
         if olcumler:
             self.show_olcum_tablosu(olcumler)
@@ -50,21 +73,18 @@ class HastaAnaEkrani(QWidget):
         else:
             self.layout.addWidget(QLabel("Bugün için ölçüm verisi bulunamadı."))
 
-        # Uyarılar
         self.goster_uyarilar()
-
-        # Egzersiz ve diyet
         self.goster_egzersiz_ve_diyet()
 
     def get_olcumler(self):
         self.cursor.execute("""
-                            SELECT tarih_zaman, kan_sekeri
-                            FROM olcumler
-                            WHERE hasta_id = %s
-                              AND tarih_zaman >= CURRENT_DATE
-                              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
-                            ORDER BY tarih_zaman
-                            """, (self.hasta_id,))
+            SELECT tarih_zaman, kan_sekeri
+            FROM kan_sekeri
+            WHERE hasta_id = %s
+              AND tarih_zaman >= CURRENT_DATE
+              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
+            ORDER BY tarih_zaman
+        """, (self.hasta_id,))
         return self.cursor.fetchall()
 
     def show_olcum_tablosu(self, olcumler):
@@ -75,7 +95,7 @@ class HastaAnaEkrani(QWidget):
 
         for i, (ts, seviye) in enumerate(olcumler):
             tarih = ts.strftime("%d.%m.%Y")
-            saat = ts.strftime("%H:%M")
+            saat = ts.strftime("%H:%M:%S")
             tablo.setItem(i, 0, QTableWidgetItem(tarih))
             tablo.setItem(i, 1, QTableWidgetItem(saat))
             tablo.setItem(i, 2, QTableWidgetItem(str(seviye)))
@@ -127,14 +147,17 @@ class HastaAnaEkrani(QWidget):
 
     def goster_egzersiz_ve_diyet(self):
         self.cursor.execute("""
-            SELECT durum FROM egzersizler
-            WHERE hasta_id = %s AND tarih = CURRENT_DATE
+            SELECT ed.durum_adi
+            FROM egzersizler e
+            JOIN egzersiz_durumlari ed ON e.durum_id = ed.id
+            WHERE e.hasta_id = %s AND e.tarih_zaman::date = CURRENT_DATE
         """, (self.hasta_id,))
         egzersiz = self.cursor.fetchone()
 
         self.cursor.execute("""
-            SELECT durum FROM diyetler
-            WHERE hasta_id = %s AND tarih = CURRENT_DATE
+            SELECT durum
+            FROM diyetler
+            WHERE hasta_id = %s AND tarih_zaman::date = CURRENT_DATE
         """, (self.hasta_id,))
         diyet = self.cursor.fetchone()
 

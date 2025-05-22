@@ -36,7 +36,7 @@ class KanSekeriGrafik(QWidget):
 
             # Diyet tarihleri (uygulananlar)
             cursor.execute("""
-                SELECT tarih 
+                SELECT tarih_zaman::date 
                 FROM diyetler 
                 WHERE hasta_id = %s AND durum = 'uygulandı'
             """, (self.hasta_id,))
@@ -44,9 +44,10 @@ class KanSekeriGrafik(QWidget):
 
             # Egzersiz tarihleri (yapılanlar)
             cursor.execute("""
-                SELECT tarih 
-                FROM egzersizler 
-                WHERE hasta_id = %s AND durum = 'yapıldı'
+                SELECT e.tarih_zaman::date
+                FROM egzersizler e
+                JOIN egzersiz_durumlari d ON e.durum_id = d.id
+                WHERE e.hasta_id = %s AND d.durum_adi = 'yapıldı'
             """, (self.hasta_id,))
             egzersiz_tarihleri = [row[0] for row in cursor.fetchall()]
 
@@ -76,13 +77,11 @@ class KanSekeriGrafik(QWidget):
                 egzersiz_zaman = datetime.combine(tarih, datetime.min.time()) + timedelta(hours=12)
                 ax.axvline(egzersiz_zaman, color='red', linestyle='--', alpha=0.5, label='Egzersiz Yapıldı')
 
-            # Etiket ve ayarlar
             ax.set_title("Kan Şekeri Zaman Serisi")
             ax.set_xlabel("Tarih")
             ax.set_ylabel("Kan Şekeri (mg/dL)")
             ax.grid(True)
 
-            # Etiketleri tekrar edenleri kaldır (legend bug’ı için)
             handles, labels = ax.get_legend_handles_labels()
             unique = dict(zip(labels, handles))
             ax.legend(unique.values(), unique.keys())
@@ -91,3 +90,4 @@ class KanSekeriGrafik(QWidget):
 
         except Exception as e:
             QMessageBox.critical(self, "Hata", f"Veri alınamadı:\n{e}")
+

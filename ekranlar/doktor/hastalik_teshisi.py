@@ -152,26 +152,31 @@ class HastalikTeshisiEkrani(QWidget):
             conn = baglanti_kur()
             if conn is None:
                 return []
+
             cur = conn.cursor()
 
-            # Sistemde tanımlı belirtiler
             tum_belirtiler = [
-                "Poliüri", "Polifaji", "Polidipsi", "Nöropati", "Kilo kaybı",
-                "Yorgunluk", "Yaraların yavaş iyileşmesi", "Bulanık görme"
+                "Poliüri (Sık idrara çıkma)",
+                "Polifaji (Aşırı açlık hissi)",
+                "Polidipsi (Aşırı susama hissi)",
+                "Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)",
+                "Kilo kaybı",
+                "Yorgunluk",
+                "Yaraların yavaş iyileşmesi",
+                "Bulanık görme"
             ]
 
-            # Bu hastanın aktif olarak kaydettiği belirtiler
             cur.execute("""
-                        SELECT DISTINCT belirti
-                        FROM belirtiler
-                        WHERE hasta_id = %s
-                        """, (self.hasta_id,))
+                SELECT bt.ad
+                FROM belirtiler b
+                JOIN belirti_tanimlari bt ON b.belirti_id = bt.id
+                WHERE b.hasta_id = %s
+            """, (self.hasta_id,))
             aktif_belirtiler_raw = cur.fetchall()
             conn.close()
 
             aktif_belirtiler = {row[0] for row in aktif_belirtiler_raw}
 
-            # Tüm belirtileri göster, aktif olanları işaretle
             sonuc = []
             for belirti in tum_belirtiler:
                 sonuc.append({
@@ -187,12 +192,25 @@ class HastalikTeshisiEkrani(QWidget):
     def teshisi_yap(self, belirtiler):
         aktif = set([b['ad'] for b in belirtiler if b['durum']])
 
-        # Her hastalık için gerekli belirtiler (tam eşleşme arıyoruz)
         kurallar = {
-            "Hipoglisemi": {"Nöropati", "Polifaji", "Yorgunluk"},
-            "Normal Alt Düzey": {"Yorgunluk", "Kilo kaybı"},
-            "Normal Üst Düzey": {"Bulanık görme", "Nöropati"},
-            "Hiperglisemi": {"Yaraların yavaş iyileşmesi", "Polifaji", "Polidipsi"},
+            "Hipoglisemi": {
+                "Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)",
+                "Polifaji (Aşırı açlık hissi)",
+                "Yorgunluk"
+            },
+            "Normal Alt Düzey": {
+                "Yorgunluk",
+                "Kilo kaybı"
+            },
+            "Normal Üst Düzey": {
+                "Bulanık görme",
+                "Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)"
+            },
+            "Hiperglisemi": {
+                "Yaraların yavaş iyileşmesi",
+                "Polifaji (Aşırı açlık hissi)",
+                "Polidipsi (Aşırı susama hissi)"
+            },
         }
 
         for ad, gerek in kurallar.items():
