@@ -53,7 +53,7 @@ if __name__ == "__main__":
         dogum_tarihi="1985-06-15",
         cinsiyet="Kadın",
         uzmanlik_alani="Dahiliye",
-        resim_yolu="asssets/ayşe_demir.png"
+        resim_yolu="assets/ayşe_demir.png"
     )
     doktor_ekle(
         tc="11111111111",
