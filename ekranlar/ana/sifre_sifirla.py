@@ -33,13 +33,13 @@ def hashle(sifre):
 def mail_gonder(alici_email, yeni_sifre):
     mesaj = MIMEText(f"Yeni şifreniz: {yeni_sifre}\nLütfen giriş yaptıktan sonra değiştirin.")
     mesaj["Subject"] = "Diyabet Takip Sistemi - Şifre Sıfırlama"
-    mesaj["From"] = "merome813@gmail.com"
+    mesaj["From"] = "diabetestrackingsystem@gmail.com"
     mesaj["To"] = alici_email
 
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
-        server.login("merome813@gmail.com", "srkc dako ymmi bqkt")
+        server.login("diabetestrackingsystem@gmail.com", "rowg rgfa iago dzdg")
         server.send_message(mesaj)
         server.quit()
         return True

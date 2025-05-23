@@ -84,12 +84,12 @@ class HastaEklemeEkrani(QWidget):
             """
             msg = MIMEText(mesaj)
             msg['Subject'] = "Diyabet Takip Sistemi Giriş Bilgileri"
-            msg['From'] = "merome813@gmail.com"
+            msg['From'] = "diabetestrackingsystem@gmail.com"
             msg['To'] = alici_email
 
             smtp = smtplib.SMTP('smtp.gmail.com', 587)
             smtp.starttls()
-            smtp.login("merome813@gmail.com", "srkc dako ymmi bqkt")
+            smtp.login("diabetestrackingsystem@gmail.com", "rowg rgfa iago dzdg")
             smtp.send_message(msg)
             smtp.quit()
         except Exception as e:
