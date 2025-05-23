@@ -46,14 +46,14 @@ def doktor_ekle(
 if __name__ == "__main__":
     doktor_ekle(
         tc="12345678901",
-        ad="Ayşe",
-        soyad="Demir",
-        email="ayse.demir@example.com",
+        ad="Belinay",
+        soyad="Karatepe",
+        email="belinay.karatepe@example.com",
         sifre="12345",
         dogum_tarihi="1985-06-15",
         cinsiyet="Kadın",
-        uzmanlik_alani="Dahiliye",
-        resim_yolu="assets/ayşe_demir.png"
+        uzmanlik_alani="Kardiyoloji",
+        resim_yolu="assets/belinay_karatepe.png"
     )
     doktor_ekle(
         tc="11111111111",
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         sifre="12345",
         dogum_tarihi="1974-11-30",
         cinsiyet="Erkek",
-        uzmanlik_alani="Kardiyoloji",
+        uzmanlik_alani="Dahiliye",
         resim_yolu="assets/mehmet_ali_akinci.jpeg"
     )
 

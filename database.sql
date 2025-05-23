@@ -133,6 +133,31 @@ CREATE TABLE IF NOT EXISTS uyarilar (
     FOREIGN KEY (tip_id) REFERENCES uyari_turleri(id) ON DELETE CASCADE
 );
 
+-- Notlar
+CREATE TABLE notlar_ve_oneriler (
+    id SERIAL PRIMARY KEY,
+    hasta_id INTEGER NOT NULL REFERENCES hastalar(id) ON DELETE CASCADE,
+    doktor_id INTEGER NOT NULL REFERENCES doktorlar(id) ON DELETE CASCADE,
+    tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    baslik TEXT,
+    aciklama TEXT
+);
+
+-- Egzersiz Türleri Durumları Eklemeler
+INSERT INTO egzersiz_turleri (tur_adi) VALUES
+('Yürüyüş'),
+('Bisiklet'),
+('Klinik Egzersiz');
+INSERT INTO egzersiz_durumlari (durum_adi) VALUES
+('yapıldı'),
+('yapılmadı');
+
+-- Diyet Türleri Eklemeler
+INSERT INTO diyet_tanimlari (ad) VALUES
+('Az Şekerli Diyet'),
+('Şekersiz Diyet'),
+('Dengeli Beslenme');
+
 ALTER TABLE kan_sekeri
 ALTER COLUMN tarih_zaman TYPE timestamptz
 USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';

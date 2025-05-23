@@ -123,8 +123,13 @@ class DoktorAnaEkran(QMainWindow):
         self.btn_hastalik_teshisi.clicked.connect(self.hastalik_teshisi_ekranini_ac)
         self.layout.addWidget(self.btn_hastalik_teshisi)
 
+        self.btn_arsiv_goruntule = QPushButton("💾 Arşiv Görüntüle")
+        self.btn_arsiv_goruntule.clicked.connect(self.arsiv_goruntule_ekranini_ac)
+        self.layout.addWidget(self.btn_arsiv_goruntule)
+
         for btn in [self.btn_detay, self.btn_hasta_ekle, self.btn_kan_sekeri_ekle,
-                    self.btn_egzersiz_ekle, self.btn_diyet_ekle, self.btn_grafik]:
+                    self.btn_egzersiz_ekle, self.btn_diyet_ekle, self.btn_grafik,
+                    self.btn_hastalik_teshisi, self.btn_arsiv_goruntule]:
             btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             btn.setMinimumHeight(45)
 
@@ -242,6 +247,15 @@ class DoktorAnaEkran(QMainWindow):
         from ekranlar.doktor.hastalik_teshisi import HastalikTeshisiEkrani
         self.teshis_pencere = HastalikTeshisiEkrani(hasta_id)
         self.teshis_pencere.show()
+
+    def arsiv_goruntule_ekranini_ac(self):
+        if not self.hasta_listesi.currentItem():
+            QMessageBox.warning(self, "Hata", "Lütfen bir hasta seçiniz!")
+            return
+        hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
+        from ekranlar.doktor.arsiv_goruntule import ArsivEkrani
+        self.arsiv_pencere = ArsivEkrani(hasta_id)
+        self.arsiv_pencere.show()
 
 
 if __name__ == "__main__":
