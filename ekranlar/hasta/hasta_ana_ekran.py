@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QTextEdit, QHBoxLayout, \
-    QFrame, QScrollArea, QGridLayout, QSizePolicy
+    QFrame, QScrollArea, QGridLayout, QSizePolicy, QLineEdit
 from PyQt5.QtGui import QFont, QIcon, QPixmap, QPalette, QColor
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import QPushButton
 from ekranlar.hasta.kan_sekeri_giris import KanSekeriGirisPenceresi
 from ekranlar.hasta.egzersiz_giris import EgzersizGirisPenceresi
 from ekranlar.hasta.diyet_giris import DiyetGirisPenceresi
-
+from PyQt5.QtWidgets import QInputDialog, QMessageBox
+import hashlib
 
 class HastaAnaEkrani(QWidget):
     def __init__(self, ad, soyad, tc):
@@ -252,6 +253,14 @@ class HastaAnaEkrani(QWidget):
         header_layout.addSpacing(20)
         header_layout.addLayout(info_layout)
         header_layout.addStretch()
+
+        # Şifre Yenile Butonu
+        sifre_btn = QPushButton("🔒 Şifreyi Değiştir")
+        sifre_btn.setFixedHeight(30)
+        sifre_btn.setStyleSheet("font-size: 13px; padding: 4px 12px;")
+        sifre_btn.clicked.connect(self.sifre_degistir)
+
+        header_layout.addWidget(sifre_btn)
 
         header_frame.setLayout(header_layout)
         return header_frame
@@ -717,3 +726,14 @@ class HastaAnaEkrani(QWidget):
                 widget.setParent(None)
         self.bilgi_yuklendi = False
         self.init_ui()
+
+    def sifre_degistir(self):
+        yeni_sifre, ok = QInputDialog.getText(self, "Şifre Güncelle", "Yeni şifrenizi girin:", QLineEdit.Password)
+        if ok and yeni_sifre:
+            hashli = hashlib.sha256(yeni_sifre.encode()).digest()
+            try:
+                self.cursor.execute("UPDATE hastalar SET sifre = %s WHERE id = %s", (hashli, self.hasta_id))
+                self.conn.commit()
+                QMessageBox.information(self, "Başarılı", "Şifreniz başarıyla güncellendi.")
+            except Exception as e:
+                QMessageBox.warning(self, "Hata", f"Şifre güncellenemedi: {str(e)}")
