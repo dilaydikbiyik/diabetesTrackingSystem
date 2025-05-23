@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QMessageBox, QWidget
 from veritabani import baglanti_kur
 from hashleme import hashle
 import datetime
+import secrets
+import smtplib
+from email.mime.text import MIMEText
 
 class HastaEklemeEkrani(QWidget):
     def __init__(self, doktor_id):
@@ -33,12 +36,6 @@ class HastaEklemeEkrani(QWidget):
         layout.addWidget(self.lbl_email)
         layout.addWidget(self.txt_email)
 
-        self.lbl_sifre = QLabel("Şifre:")
-        self.txt_sifre = QLineEdit()
-        self.txt_sifre.setEchoMode(QLineEdit.Password)
-        layout.addWidget(self.lbl_sifre)
-        layout.addWidget(self.txt_sifre)
-
         self.lbl_dogum_tarihi = QLabel("Doğum Tarihi (YYYY-MM-DD):")
         self.txt_dogum_tarihi = QLineEdit()
         layout.addWidget(self.lbl_dogum_tarihi)
@@ -69,16 +66,44 @@ class HastaEklemeEkrani(QWidget):
             self.profil_resmi_yolu = dosya_yolu
             self.lbl_resim.setText(f"Seçilen: {dosya_yolu.split('/')[-1]}")
 
+    def rastgele_sifre_olustur(self, uzunluk=10):
+        return secrets.token_urlsafe(uzunluk)
+
+    def sifreyi_eposta_ile_gonder(self, alici_email, tc, sifre):
+        try:
+            mesaj = f"""
+            Sayın Kullanıcımız,
+
+            Diyabet Takip Sistemi'ne giriş bilgileriniz aşağıdadır:
+
+            Kullanıcı Adı (TC): {tc}
+            Şifre: {sifre}
+
+            Lütfen sistemimize giriş yaptıktan sonra şifrenizi değiştiriniz.
+            Sağlıklı günler dileriz.
+            """
+            msg = MIMEText(mesaj)
+            msg['Subject'] = "Diyabet Takip Sistemi Giriş Bilgileri"
+            msg['From'] = "merome813@gmail.com"
+            msg['To'] = alici_email
+
+            smtp = smtplib.SMTP('smtp.gmail.com', 587)
+            smtp.starttls()
+            smtp.login("merome813@gmail.com", "srkc dako ymmi bqkt")
+            smtp.send_message(msg)
+            smtp.quit()
+        except Exception as e:
+            print("E-posta gönderme hatası:", e)
+
     def hasta_ekle(self):
         tc = self.txt_tc.text().strip()
         ad = self.txt_ad.text().strip()
         soyad = self.txt_soyad.text().strip()
         email = self.txt_email.text().strip()
-        sifre = self.txt_sifre.text()
-        dogum_tarihi = self.txt_dogum_tarihi.text()
+        dogum_tarihi = self.txt_dogum_tarihi.text().strip()
         cinsiyet = self.cmb_cinsiyet.currentText()
 
-        if not all([tc, ad, soyad, email, sifre, dogum_tarihi]):
+        if not all([tc, ad, soyad, email, dogum_tarihi]):
             QMessageBox.warning(self, "Hata", "Lütfen tüm alanları doldurun!")
             return
 
@@ -88,6 +113,7 @@ class HastaEklemeEkrani(QWidget):
             QMessageBox.warning(self, "Hata", "Doğum tarihi formatı hatalı! (YYYY-MM-DD)")
             return
 
+        sifre = self.rastgele_sifre_olustur()
         hashed_sifre = hashle(sifre)
 
         profil_resmi = None
@@ -110,13 +136,14 @@ class HastaEklemeEkrani(QWidget):
             ))
             conn.commit()
 
-            QMessageBox.information(self, "Başarılı", "Hasta başarıyla eklendi!")
+            self.sifreyi_eposta_ile_gonder(email, tc, sifre)
+
+            QMessageBox.information(self, "Başarılı", "Hasta başarıyla eklendi ve şifresi e-posta ile gönderildi!")
 
             self.txt_tc.clear()
             self.txt_ad.clear()
             self.txt_soyad.clear()
             self.txt_email.clear()
-            self.txt_sifre.clear()
             self.txt_dogum_tarihi.clear()
             self.lbl_resim.setText("Profil Resmi (isteğe bağlı)")
             self.profil_resmi_yolu = None

@@ -66,3 +66,4 @@ if __name__ == "__main__":
         uzmanlik_alani="Kardiyoloji",
         resim_yolu="assets/mehmet_ali_akinci.jpeg"
     )
+
