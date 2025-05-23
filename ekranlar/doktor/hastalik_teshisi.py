@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout,
                              QPushButton, QTableWidget, QTableWidgetItem, QHeaderView,
-                             QMessageBox, QFrame, QSplitter)
+                             QMessageBox, QFrame, QSplitter, QCheckBox)
 from PyQt5.QtGui import QFont, QColor, QPixmap
 from PyQt5.QtCore import Qt
 from veritabani import baglanti_kur
@@ -12,6 +12,7 @@ class HastalikTeshisiEkrani(QWidget):
         super().__init__(parent)
         self.hasta_id = hasta_id
         self.parent = parent
+        self.checkboxlar = []
         self.setupUI()
 
     def setupUI(self):
@@ -20,7 +21,6 @@ class HastalikTeshisiEkrani(QWidget):
 
         main_layout = QVBoxLayout()
 
-        # Başlık
         header_layout = QHBoxLayout()
         title_label = QLabel("Hastalık Teşhisi ve Analizi")
         title_label.setFont(QFont("Arial", 16, QFont.Bold))
@@ -47,7 +47,6 @@ class HastalikTeshisiEkrani(QWidget):
 
         splitter = QSplitter(Qt.Horizontal)
 
-        # Sol: Belirtiler tablosu
         left_widget = QWidget()
         left_layout = QVBoxLayout(left_widget)
 
@@ -57,13 +56,12 @@ class HastalikTeshisiEkrani(QWidget):
 
         self.belirtiler_table = QTableWidget()
         self.belirtiler_table.setColumnCount(2)
-        self.belirtiler_table.setHorizontalHeaderLabels(["Belirti", "Durum"])
+        self.belirtiler_table.setHorizontalHeaderLabels(["Belirti", "Seç"])
         self.belirtiler_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         left_layout.addWidget(self.belirtiler_table)
 
         splitter.addWidget(left_widget)
 
-        # Sağ: Teşhis bilgileri
         right_widget = QWidget()
         right_layout = QVBoxLayout(right_widget)
 
@@ -97,11 +95,14 @@ class HastalikTeshisiEkrani(QWidget):
 
         main_layout.addWidget(splitter)
 
-        # Butonlar
         button_layout = QHBoxLayout()
         self.yenile_btn = QPushButton("Verileri Yenile")
         self.yenile_btn.clicked.connect(self.verileri_yukle)
         button_layout.addWidget(self.yenile_btn)
+
+        self.kaydet_btn = QPushButton("Seçimleri Kaydet")
+        self.kaydet_btn.clicked.connect(self.belirtileri_kaydet)
+        button_layout.addWidget(self.kaydet_btn)
 
         self.kapat_btn = QPushButton("Kapat")
         self.kapat_btn.clicked.connect(self.close)
@@ -120,13 +121,34 @@ class HastalikTeshisiEkrani(QWidget):
 
         belirtiler = self.belirtileri_getir()
         self.belirtiler_table.setRowCount(len(belirtiler))
+        self.checkboxlar = []
         for i, belirti in enumerate(belirtiler):
             self.belirtiler_table.setItem(i, 0, QTableWidgetItem(belirti['ad']))
-            durum_item = QTableWidgetItem("Var" if belirti['durum'] else "Yok")
-            durum_item.setBackground(QColor(255, 200, 200) if belirti['durum'] else QColor(200, 255, 200))
-            self.belirtiler_table.setItem(i, 1, durum_item)
+            checkbox = QCheckBox()
+            checkbox.setChecked(belirti['durum'])
+            self.belirtiler_table.setCellWidget(i, 1, checkbox)
+            self.checkboxlar.append((belirti['ad'], checkbox))
 
-        self.teshisi_yap(belirtiler)
+        self.teshisi_yap([{'ad': ad, 'durum': cb.isChecked()} for ad, cb in self.checkboxlar])
+
+    def belirtileri_kaydet(self):
+        try:
+            conn = baglanti_kur()
+            cur = conn.cursor()
+            cur.execute("DELETE FROM belirtiler WHERE hasta_id = %s", (self.hasta_id,))
+            for ad, cb in self.checkboxlar:
+                if cb.isChecked():
+                    cur.execute("""
+                        INSERT INTO belirtiler (hasta_id, belirti_id)
+                        SELECT %s, id FROM belirti_tanimlari WHERE ad = %s
+                    """, (self.hasta_id, ad))
+            conn.commit()
+            cur.close()
+            conn.close()
+            QMessageBox.information(self, "Başarılı", "Seçilen belirtiler kaydedildi.")
+            self.verileri_yukle()
+        except Exception as e:
+            QMessageBox.critical(self, "Hata", f"Kaydetme sırasında hata oluştu:\n{e}")
 
     def hasta_bilgilerini_getir(self):
         try:
@@ -155,33 +177,21 @@ class HastalikTeshisiEkrani(QWidget):
 
             cur = conn.cursor()
 
-            tum_belirtiler = [
-                "Poliüri (Sık idrara çıkma)",
-                "Polifaji (Aşırı açlık hissi)",
-                "Polidipsi (Aşırı susama hissi)",
-                "Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)",
-                "Kilo kaybı",
-                "Yorgunluk",
-                "Yaraların yavaş iyileşmesi",
-                "Bulanık görme"
-            ]
+            cur.execute("SELECT id, ad FROM belirti_tanimlari ORDER BY id")
+            tum_belirtiler = cur.fetchall()
 
             cur.execute("""
-                SELECT bt.ad
-                FROM belirtiler b
-                JOIN belirti_tanimlari bt ON b.belirti_id = bt.id
-                WHERE b.hasta_id = %s
+                SELECT belirti_id FROM belirtiler WHERE hasta_id = %s
             """, (self.hasta_id,))
-            aktif_belirtiler_raw = cur.fetchall()
+            aktif_belirti_idler = {row[0] for row in cur.fetchall()}
             conn.close()
 
-            aktif_belirtiler = {row[0] for row in aktif_belirtiler_raw}
-
             sonuc = []
-            for belirti in tum_belirtiler:
+            for belirti_id, ad in tum_belirtiler:
                 sonuc.append({
-                    "ad": belirti,
-                    "durum": belirti in aktif_belirtiler
+                    "id": belirti_id,
+                    "ad": ad,
+                    "durum": belirti_id in aktif_belirti_idler
                 })
             return sonuc
 

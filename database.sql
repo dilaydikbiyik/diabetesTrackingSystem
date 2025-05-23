@@ -158,6 +158,18 @@ INSERT INTO diyet_tanimlari (ad) VALUES
 ('Şekersiz Diyet'),
 ('Dengeli Beslenme');
 
+-- Belirti Türleri Eklemeler
+INSERT INTO belirti_tanimlari (ad) VALUES
+('Poliüri (Sık idrara çıkma)'),
+('Polifaji (Aşırı açlık hissi)'),
+('Polidipsi (Aşırı susama hissi)'),
+('Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)'),
+('Kilo kaybı'),
+('Yorgunluk'),
+('Yaraların yavaş iyileşmesi'),
+('Bulanık görme');
+
+
 ALTER TABLE kan_sekeri
 ALTER COLUMN tarih_zaman TYPE timestamptz
 USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';
