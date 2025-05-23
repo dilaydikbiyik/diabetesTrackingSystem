@@ -169,7 +169,6 @@ INSERT INTO belirti_tanimlari (ad) VALUES
 ('Yaraların yavaş iyileşmesi'),
 ('Bulanık görme');
 
-
 ALTER TABLE kan_sekeri
 ALTER COLUMN tarih_zaman TYPE timestamptz
 USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';
@@ -185,3 +184,7 @@ USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';
 ALTER TABLE diyetler
 ALTER COLUMN tarih_zaman TYPE timestamptz
 USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';
+
+ALTER TABLE kan_sekeri ADD COLUMN olcum_grubu VARCHAR(10)
+CHECK (olcum_grubu IN ('sabah', 'öğle', 'ikindi', 'akşam', 'gece'));
+

@@ -53,7 +53,7 @@ if __name__ == "__main__":
         dogum_tarihi="1985-06-15",
         cinsiyet="Kadın",
         uzmanlik_alani="Kardiyoloji",
-        resim_yolu="assets/belinay_karatepe.png"
+        resim_yolu="assets/belinay_karatepe.jpg"
     )
     doktor_ekle(
         tc="11111111111",

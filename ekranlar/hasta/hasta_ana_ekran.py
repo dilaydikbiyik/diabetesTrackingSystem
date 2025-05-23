@@ -18,7 +18,7 @@ class HastaAnaEkrani(QWidget):
     def __init__(self, ad, soyad, tc):
         super().__init__()
         self.bilgi_yuklendi = False
-        self.setWindowTitle("Diabetes Care - Hasta Paneli")
+        self.setWindowTitle("Hasta Paneli")
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(200, 100, 1200, 800)
 
@@ -265,57 +265,72 @@ class HastaAnaEkrani(QWidget):
         header_frame.setLayout(header_layout)
         return header_frame
 
-    def create_stats_cards(self, olcumler):
-        """İstatistik kartları oluştur"""
+    def create_stats_cards(self, tum_olcumler, gecerli_olcumler):
+        """İstatistik kartları oluştur - saat dışı veriler dahil ama ortalamada hariç"""
         stats_frame = QFrame()
         stats_layout = QGridLayout()
 
-        if olcumler:
-            # Ortalama hesapla
-            toplam = sum(seviye for _, seviye in olcumler)
-            adet = len(olcumler)
-            ortalama = toplam / adet
+        uyarilar = []
 
-            # Son ölçüm
-            son_olcum = olcumler[-1][1]
-
-            # İnsülin dozu
-            if ortalama < 70:
-                doz = "Yok (Hipoglisemi)"
-                doz_renk = "#dc2626"
-            elif 70 <= ortalama <= 110:
-                doz = "Yok (Normal)"
-                doz_renk = "#16a34a"
-            elif 111 <= ortalama <= 150:
-                doz = "1 ml"
-                doz_renk = "#ea580c"
-            elif 151 <= ortalama <= 200:
-                doz = "2 ml"
-                doz_renk = "#dc2626"
-            else:
-                doz = "3 ml"
-                doz_renk = "#dc2626"
-
-            # Kartlar
-            cards_data = [
-                ("Son Ölçüm", f"{son_olcum} mg/dL", "🩸", "#3b82f6"),
-                ("Ortalama", f"{ortalama:.1f} mg/dL", "📊", "#059669"),
-                ("Ölçüm Sayısı", f"{adet}", "📈", "#7c3aed"),
-                ("İnsülin Önerisi", doz, "💉", doz_renk)
-            ]
+        if tum_olcumler:
+            adet = len(tum_olcumler)
+            son_olcum = tum_olcumler[-1][1]
         else:
-            cards_data = [
-                ("Son Ölçüm", "Veri Yok", "🩸", "#6b7280"),
-                ("Ortalama", "Veri Yok", "📊", "#6b7280"),
-                ("Ölçüm Sayısı", "0", "📈", "#6b7280"),
-                ("İnsülin Önerisi", "Veri Yok", "💉", "#6b7280")
-            ]
+            adet = 0
+            son_olcum = None
+
+        if gecerli_olcumler:
+            toplam = sum(seviye for _, seviye in gecerli_olcumler)
+            gecerli_adet = len(gecerli_olcumler)
+            ortalama = toplam / gecerli_adet
+        else:
+            ortalama = 0
+            gecerli_adet = 0
+            uyarilar.append("⚠️ Tüm ölçümler saat dışıdır. Ortalama hesaplanamadı.")
+
+        if gecerli_adet < adet:
+            uyarilar.append("⚠️ Ölçüm eksik! Ortalama alınırken bazı ölçümler hesaba katılmadı.")
+
+        if gecerli_adet > 0 and gecerli_adet <= 3:
+            uyarilar.append("⚠️ Yetersiz veri! Ortalama hesaplaması güvenilir değildir.")
+
+        if ortalama == 0:
+            doz = "Veri Yok"
+            doz_renk = "#6b7280"
+        elif ortalama < 70:
+            doz = "Yok (Hipoglisemi)"
+            doz_renk = "#dc2626"
+        elif 70 <= ortalama <= 110:
+            doz = "Yok (Normal)"
+            doz_renk = "#16a34a"
+        elif 111 <= ortalama <= 150:
+            doz = "1 ml"
+            doz_renk = "#ea580c"
+        elif 151 <= ortalama <= 200:
+            doz = "2 ml"
+            doz_renk = "#dc2626"
+        else:
+            doz = "3 ml"
+            doz_renk = "#dc2626"
+
+        cards_data = [
+            ("Son Ölçüm", f"{son_olcum} mg/dL" if son_olcum else "Veri Yok", "🩸", "#3b82f6"),
+            ("Ortalama", f"{ortalama:.1f} mg/dL" if gecerli_adet > 0 else "Veri Yok", "📊", "#059669"),
+            ("Ölçüm Sayısı", f"{adet}", "📈", "#7c3aed"),
+            ("İnsülin Önerisi", doz, "💉", doz_renk)
+        ]
 
         for i, (title, value, icon, color) in enumerate(cards_data):
             card = self.create_stat_card(title, value, icon, color)
             stats_layout.addWidget(card, 0, i)
 
         stats_frame.setLayout(stats_layout)
+        self.layout.addWidget(stats_frame)
+
+        # Uyarıları göster
+        for mesaj in uyarilar:
+            self.layout.addWidget(self.create_info_card("⚠️ Uyarı", mesaj, "warning"))
+
         return stats_frame
 
     def create_stat_card(self, title, value, icon, color):
@@ -359,39 +374,27 @@ class HastaAnaEkrani(QWidget):
         self.hasta_id, ad, soyad, email, profil_resmi = bilgiler
 
         if not self.bilgi_yuklendi:
-            # Header
             header = self.create_header_section(ad, soyad, email, profil_resmi)
             self.layout.addWidget(header)
             self.bilgi_yuklendi = True
 
-        # Ölçümler
-        olcumler = self.get_olcumler()
+        tum_olcumler = self.get_tum_olcumler()
+        gecerli_olcumler = self.get_gecerli_olcumler()
 
-        # İstatistik kartları
-        stats_cards = self.create_stats_cards(olcumler)
+        stats_cards = self.create_stats_cards(tum_olcumler, gecerli_olcumler)
         self.layout.addWidget(stats_cards)
 
-        if olcumler:
-            # Grafik
-            self.show_modern_grafik(olcumler)
-
-            # Ölçüm tablosu
-            self.show_modern_olcum_tablosu(olcumler)
+        if tum_olcumler:
+            self.show_modern_grafik(tum_olcumler)
+            self.show_modern_olcum_tablosu(tum_olcumler)
         else:
-            no_data_card = self.create_info_card("📊 Bugünkü Ölçümler",
-                                                 "Bugün için henüz ölçüm verisi bulunmuyor.", "info")
+            no_data_card = self.create_info_card("📊 Bugünkü Ölçümler", "Bugün için henüz ölçüm verisi bulunmuyor.",
+                                                 "info")
             self.layout.addWidget(no_data_card)
 
-        # Durum kartları
         self.show_durum_kartlari()
-
-        # Uyarılar
         self.show_modern_uyarilar()
-
-        # Günlük yüzdeler
         self.show_gunluk_yuzde_kartlari()
-
-        # Aksiyon butonları
         self.show_action_buttons()
 
     def create_info_card(self, title, content, card_type="info"):
@@ -421,13 +424,13 @@ class HastaAnaEkrani(QWidget):
         card.setLayout(layout)
         return card
 
-    def show_modern_grafik(self, olcumler):
+    def show_modern_grafik(self, tum_olcumler):
         """Modern grafik göster"""
         # Matplotlib stilini ayarla
         plt.style.use('default')
 
-        zamanlar = [ts for ts, _ in olcumler]
-        degerler = [seviye for _, seviye in olcumler]
+        zamanlar = [ts for ts, _ in tum_olcumler]
+        degerler = [seviye for _, seviye in tum_olcumler]
 
         fig, ax = plt.subplots(figsize=(10, 4))
         fig.patch.set_facecolor('white')
@@ -444,7 +447,7 @@ class HastaAnaEkrani(QWidget):
         ax.axhspan(180, 500, alpha=0.2, color='#f87171', label='Hiperglisemi')
         ax.axhspan(0, 70, alpha=0.2, color='#60a5fa', label='Hipoglisemi')
 
-        ax.set_title("Kan Şekeri Trend Grafiği", fontsize=16, color='#1e40af',
+        ax.set_title("Kan Şekeri Grafiği", fontsize=16, color='#1e40af',
                      fontweight='bold', pad=20)
         ax.set_xlabel("Zaman", fontsize=12, color='#374151')
         ax.set_ylabel("mg/dL", fontsize=12, color='#374151')
@@ -464,20 +467,18 @@ class HastaAnaEkrani(QWidget):
         graph_card = self.create_info_card("", canvas)
         self.layout.addWidget(graph_card)
 
-    def show_modern_olcum_tablosu(self, olcumler):
-        """Modern ölçüm tablosu"""
+    def show_modern_olcum_tablosu(self, tum_olcumler):
         tablo = QTableWidget()
-        tablo.setRowCount(len(olcumler))
+        tablo.setRowCount(len(tum_olcumler))
         tablo.setColumnCount(3)
         tablo.setHorizontalHeaderLabels(["📅 Tarih", "🕐 Saat", "🩸 Kan Şekeri (mg/dL)"])
 
-        # Tablo stilini ayarla
         tablo.setAlternatingRowColors(True)
         tablo.setSelectionBehavior(QTableWidget.SelectRows)
         tablo.verticalHeader().setVisible(False)
         tablo.horizontalHeader().setStretchLastSection(True)
 
-        for i, (ts, seviye) in enumerate(olcumler):
+        for i, (ts, seviye) in enumerate(tum_olcumler):
             tarih = ts.strftime("%d.%m.%Y")
             saat = ts.strftime("%H:%M")
 
@@ -485,8 +486,18 @@ class HastaAnaEkrani(QWidget):
             saat_item = QTableWidgetItem(saat)
             seviye_item = QTableWidgetItem(str(seviye))
 
-            # Seviye rengini ayarla
-            if seviye < 70:
+            # Saat dışında olan verileri farklı renkle göster
+            self.cursor.execute("""
+                                SELECT olcum_grubu
+                                FROM kan_sekeri
+                                WHERE hasta_id = %s
+                                  AND tarih_zaman = %s
+                                """, (self.hasta_id, ts))
+            grup = self.cursor.fetchone()[0] if self.cursor.rowcount > 0 else None
+
+            if grup is None:
+                seviye_item.setBackground(QColor("#e5e7eb"))  # Gri: saat dışı
+            elif seviye < 70:
                 seviye_item.setBackground(QColor("#fecaca"))  # Kırmızı
             elif 70 <= seviye <= 110:
                 seviye_item.setBackground(QColor("#bbf7d0"))  # Yeşil
@@ -526,7 +537,7 @@ class HastaAnaEkrani(QWidget):
 
         # Egzersiz kartı
         egzersiz_yapildi = egzersiz and egzersiz[0] == 'yapıldı'
-        egzersiz_card = self.create_status_card("🏃‍♂️ Egzersiz", egzersiz_yapildi)
+        egzersiz_card = self.create_status_card("💪🏻 Egzersiz", egzersiz_yapildi)
 
         # Diyet kartı
         diyet_uygulandi = diyet and diyet[0] == 'uygulandı'
@@ -608,7 +619,7 @@ class HastaAnaEkrani(QWidget):
         kan_btn.clicked.connect(self.kan_sekeri_ekle)
 
         # Egzersiz butonu
-        egzersiz_btn = QPushButton("🏃‍♂️ Egzersiz Girişi")
+        egzersiz_btn = QPushButton("💪🏻 Egzersiz Girişi")
         egzersiz_btn.clicked.connect(self.egzersiz_ekle)
 
         # Diyet butonu
@@ -651,7 +662,7 @@ class HastaAnaEkrani(QWidget):
         yuzde_frame = QFrame()
         yuzde_layout = QHBoxLayout()
 
-        egz_card = self.create_percentage_card("🏃‍♂️ Egzersiz Başarı", egzersiz_oran)
+        egz_card = self.create_percentage_card("💪🏻 Egzersiz Başarı", egzersiz_oran)
         diyet_card = self.create_percentage_card("🍽️ Diyet Başarı", diyet_oran)
 
         yuzde_layout.addWidget(egz_card)
@@ -688,15 +699,27 @@ class HastaAnaEkrani(QWidget):
         card.setLayout(layout)
         return card
 
-    def get_olcumler(self):
+    def get_tum_olcumler(self):
         self.cursor.execute("""
-            SELECT tarih_zaman, kan_sekeri
-            FROM kan_sekeri
-            WHERE hasta_id = %s
-              AND tarih_zaman >= CURRENT_DATE
-              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
-            ORDER BY tarih_zaman
-        """, (self.hasta_id,))
+                            SELECT tarih_zaman, kan_sekeri
+                            FROM kan_sekeri
+                            WHERE hasta_id = %s
+                              AND tarih_zaman >= CURRENT_DATE
+                              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
+                            ORDER BY tarih_zaman
+                            """, (self.hasta_id,))
+        return self.cursor.fetchall()
+
+    def get_gecerli_olcumler(self):
+        self.cursor.execute("""
+                            SELECT tarih_zaman, kan_sekeri
+                            FROM kan_sekeri
+                            WHERE hasta_id = %s
+                              AND tarih_zaman >= CURRENT_DATE
+                              AND tarih_zaman < CURRENT_DATE + INTERVAL '1 day'
+                              AND olcum_grubu IS NOT NULL
+                            ORDER BY tarih_zaman
+                            """, (self.hasta_id,))
         return self.cursor.fetchall()
 
     def kan_sekeri_ekle(self):

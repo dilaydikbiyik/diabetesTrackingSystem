@@ -1,5 +1,21 @@
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QDateTimeEdit, QMessageBox
 from PyQt5.QtCore import QDateTime
+from datetime import datetime
+
+def saat_araligina_gore_grup(zaman):
+    saat = zaman.hour
+    dakika = zaman.minute
+    if 7 <= saat < 8 or (saat == 8 and dakika == 0):
+        return "sabah"
+    elif 12 <= saat < 13 or (saat == 13 and dakika == 0):
+        return "öğle"
+    elif 15 <= saat < 16 or (saat == 16 and dakika == 0):
+        return "ikindi"
+    elif 18 <= saat < 19 or (saat == 19 and dakika == 0):
+        return "akşam"
+    elif 22 <= saat < 23 or (saat == 23 and dakika == 0):
+        return "gece"
+    return None
 
 class KanSekeriGirisPenceresi(QDialog):
     def __init__(self, hasta_id, conn):
@@ -41,12 +57,17 @@ class KanSekeriGirisPenceresi(QDialog):
             return
 
         zaman = self.datetime_edit.dateTime().toPyDateTime()
+        grup = saat_araligina_gore_grup(zaman)
 
         self.cursor.execute("""
-            INSERT INTO kan_sekeri (hasta_id, tarih_zaman, kan_sekeri)
-            VALUES (%s, %s, %s)
-        """, (self.hasta_id, zaman, seviye))
+            INSERT INTO kan_sekeri (hasta_id, tarih_zaman, kan_sekeri, olcum_grubu)
+            VALUES (%s, %s, %s, %s)
+        """, (self.hasta_id, zaman, seviye, grup))
         self.conn.commit()
 
-        QMessageBox.information(self, "Başarılı", "Veri başarıyla kaydedildi.")
+        if not grup:
+            QMessageBox.warning(self, "Uyarı", "⚠️ Bu saat dışı bir ölçümdür. Ortalamaya dahil edilmeyecek.")
+        else:
+            QMessageBox.information(self, "Başarılı", f"{grup.title()} ölçümü başarıyla kaydedildi.")
+
         self.accept()
