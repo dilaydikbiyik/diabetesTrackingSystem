@@ -148,6 +148,7 @@ INSERT INTO egzersiz_turleri (tur_adi) VALUES
 ('Yürüyüş'),
 ('Bisiklet'),
 ('Klinik Egzersiz');
+
 INSERT INTO egzersiz_durumlari (durum_adi) VALUES
 ('yapıldı'),
 ('yapılmadı');
@@ -185,6 +186,9 @@ ALTER TABLE diyetler
 ALTER COLUMN tarih_zaman TYPE timestamptz
 USING tarih_zaman AT TIME ZONE 'Europe/Istanbul';
 
-ALTER TABLE kan_sekeri ADD COLUMN olcum_grubu VARCHAR(10)
+ALTER TABLE kan_sekeri ADD COLUMN olcum_grubu VARCHAR(10);
+
+ALTER TABLE kan_sekeri
+ADD CONSTRAINT olcum_grubu_check
 CHECK (olcum_grubu IN ('sabah', 'öğle', 'ikindi', 'akşam', 'gece'));
 

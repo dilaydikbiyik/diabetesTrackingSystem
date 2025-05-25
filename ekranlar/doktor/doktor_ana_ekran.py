@@ -54,7 +54,6 @@ class DoktorAnaEkran(QMainWindow):
 
         # Verileri yükle
         self.doktor_bilgilerini_yukle()
-        self.hastalari_getir()
 
     def create_sidebar(self):
         # Sol panel container
@@ -188,10 +187,8 @@ class DoktorAnaEkran(QMainWindow):
         """)
         layout.addWidget(nav_title)
 
-        # Menü butonları
         menu_items = [
             ("👥", "Hastalarım", self.show_patients_tab),
-            ("📊", "İstatistikler", self.show_stats_tab),
             ("🔐", "Şifre Değiştir", self.sifre_degistir)
         ]
 
@@ -247,9 +244,6 @@ class DoktorAnaEkran(QMainWindow):
         self.scroll_layout = QVBoxLayout()
         self.scroll_layout.setSpacing(25)
         scroll_content.setLayout(self.scroll_layout)
-
-        # Varsayılan olarak hasta listesini göster
-        self.create_patients_section()
 
         scroll.setWidget(scroll_content)
         self.content_layout.addWidget(scroll)
@@ -443,20 +437,7 @@ class DoktorAnaEkran(QMainWindow):
         # Mevcut içeriği temizle ve hasta sekmesini göster
         self.clear_scroll_content()
         self.create_patients_section()
-
-    def show_stats_tab(self):
-        # İstatistik sekmesi - placeholder
-        self.clear_scroll_content()
-        stats_label = QLabel("📊 İstatistikler yakında eklenecek...")
-        stats_label.setStyleSheet("""
-            QLabel {
-                font-size: 18px;
-                color: #718096;
-                padding: 50px;
-            }
-        """)
-        stats_label.setAlignment(Qt.AlignCenter)
-        self.scroll_layout.addWidget(stats_label)
+        self.hastalari_getir()
 
     def clear_scroll_content(self):
         """Scroll içeriğini temizle"""

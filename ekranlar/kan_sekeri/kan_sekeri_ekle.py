@@ -51,7 +51,6 @@ class KanSekeriEklemeEkrani(QWidget):
         tarih_saat = pytz.timezone("Europe/Istanbul").localize(tarih_saat)
 
         grup = saat_araligina_gore_grup(tarih_saat)
-
         kan_sekeri_str = self.txt_kan_sekeri.text()
 
         if not kan_sekeri_str:
@@ -70,11 +69,35 @@ class KanSekeriEklemeEkrani(QWidget):
             conn = baglanti_kur()
             cursor = conn.cursor()
 
-            query = """
+            # Kan şekeri verisini ekle
+            cursor.execute("""
                 INSERT INTO kan_sekeri (hasta_id, tarih_zaman, kan_sekeri, olcum_grubu)
                 VALUES (%s, %s, %s, %s)
-            """
-            cursor.execute(query, (self.hasta_id, tarih_saat, kan_sekeri, grup))
+            """, (self.hasta_id, tarih_saat, kan_sekeri, grup))
+
+            # Uyarı üretimi
+            uyari_tip_id = None
+            mesaj = None
+
+            if kan_sekeri < 70:
+                uyari_tip_id = 1
+                mesaj = "Hastanın kan şekeri seviyesi 70 mg/dL'nin altına düştü. Hipoglisemi riski! Hızlı müdahale gerekebilir."
+            elif 111 <= kan_sekeri <= 150:
+                uyari_tip_id = 3
+                mesaj = "Hastanın kan şekeri 111-150 mg/dL arasında. Durum izlenmeli."
+            elif 151 <= kan_sekeri <= 200:
+                uyari_tip_id = 4
+                mesaj = "Hastanın kan şekeri 151-200 mg/dL arasında. Diyabet kontrolü gereklidir."
+            elif kan_sekeri > 200:
+                uyari_tip_id = 5
+                mesaj = "Hastanın kan şekeri 200 mg/dL'nin üzerinde. Hiperglisemi durumu. Acil müdahale gerekebilir."
+
+            if uyari_tip_id and mesaj:
+                cursor.execute("""
+                    INSERT INTO uyarilar (hasta_id, tip_id, mesaj, zaman)
+                    VALUES (%s, %s, %s, %s)
+                """, (self.hasta_id, uyari_tip_id, mesaj, tarih_saat))
+
             conn.commit()
 
             if not grup:
@@ -83,9 +106,10 @@ class KanSekeriEklemeEkrani(QWidget):
                 QMessageBox.information(self, "Başarılı", f"{grup.title()} ölçümü başarıyla eklendi.")
 
             self.txt_kan_sekeri.clear()
-
             cursor.close()
             conn.close()
 
         except Exception as e:
             QMessageBox.critical(self, "Hata", f"Veritabanı hatası: {e}")
+
+
