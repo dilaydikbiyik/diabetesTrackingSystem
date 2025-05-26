@@ -54,9 +54,8 @@ class SifreSifirlaEkrani(QWidget):
         self.setWindowTitle("🔐 Şifremi Unuttum")
         self.setGeometry(500, 300, 400, 180)
 
-        # Arka plan rengi ve yazı tipi
         palette = QPalette()
-        palette.setColor(QPalette.Window, QColor("#e6f0fa"))  # Açık mavi
+        palette.setColor(QPalette.Window, QColor("#e6f0fa"))
         self.setPalette(palette)
 
         self.setFont(QFont("Arial", 10))

@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QComboBox, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QCursor, QColor, QPalette, QLinearGradient, QIcon
-from ekranlar.hasta.hasta_giris import HastaGirisEkrani
-from ekranlar.doktor.doktor_giris import DoktorGirisEkrani
+from ekranlar.ana.hasta_giris import HastaGirisEkrani
+from ekranlar.ana.doktor_giris import DoktorGirisEkrani
 from ekranlar.ana.yardim_ekrani import YardimPenceresi
 from ekranlar.ana.sifre_sifirla import SifreSifirlaEkrani
 from ekranlar.ana.arama_ekrani import AramaEkrani
@@ -13,7 +13,6 @@ class KartFrame(QFrame):
         self.setFixedSize(220, 220)
         self.setCursor(QCursor(Qt.PointingHandCursor))
 
-        # Stil
         self.setStyleSheet(f"""
             QFrame {{
                 background-color: {renk};
@@ -27,7 +26,6 @@ class KartFrame(QFrame):
             }}
         """)
 
-        # Simge
         ikon_label = QLabel()
         if icon_path:
             ikon = QPixmap(icon_path).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -35,18 +33,15 @@ class KartFrame(QFrame):
             ikon_label.setAlignment(Qt.AlignCenter)
             ikon_label.setStyleSheet("background: transparent;")
 
-        # Başlık
         self.baslik_label = QLabel(baslik)
         self.baslik_label.setAlignment(Qt.AlignCenter)
         self.baslik_label.setStyleSheet("font-size: 16px; font-weight: bold; color: white;")
 
-        # Açıklama
         self.aciklama_label = QLabel(aciklama)
         self.aciklama_label.setAlignment(Qt.AlignCenter)
         self.aciklama_label.setWordWrap(True)
         self.aciklama_label.setStyleSheet("font-size: 12px; color: white;")
 
-        # Hepsi bir düzen içinde
         layout = QVBoxLayout()
         layout.setSpacing(10)
         layout.setContentsMargins(10, 15, 10, 15)
@@ -66,7 +61,6 @@ class AnaGirisEkrani(QWidget):
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(400, 150, 1000, 700)
 
-        # Dil ayarları
         self.dil_secimi = "Türkçe"
         self.dil_dict = {
             "Türkçe": {
@@ -95,7 +89,6 @@ class AnaGirisEkrani(QWidget):
             }
         }
 
-        # Arka plan
         gradient = QLinearGradient(0, 0, 0, self.height())
         gradient.setColorAt(0, QColor("#ffffff"))
         gradient.setColorAt(1, QColor("#f0f7ff"))
@@ -105,7 +98,6 @@ class AnaGirisEkrani(QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-        # Üst bar
         ust_serit = QFrame()
         ust_serit.setFixedHeight(100)
         ust_serit.setStyleSheet("background-color: #42C2BC;")
@@ -137,7 +129,6 @@ class AnaGirisEkrani(QWidget):
         ust_layout.addWidget(saglik_logo)
         ust_layout.setContentsMargins(20, 10, 20, 10)
 
-        # Başlık ve açıklama
         self.baslik = QLabel()
         self.baslik.setAlignment(Qt.AlignCenter)
         self.baslik.setStyleSheet("""
@@ -159,7 +150,6 @@ class AnaGirisEkrani(QWidget):
         baslik_layout.addWidget(self.baslik)
         baslik_layout.addWidget(self.aciklama)
 
-        # Kartlar
         self.hasta_kart = KartFrame("", "", "assets/maske.png", "#e53935")
         self.hasta_kart.mousePressEvent = lambda event: self.hasta_girisi_ac()
 
@@ -178,7 +168,6 @@ class AnaGirisEkrani(QWidget):
         kartlar_layout.addWidget(self.yardim_kart)
         kartlar_layout.addStretch()
 
-        # Alt bilgi
         self.sifre_label = QLabel()
         self.sifre_label.setOpenExternalLinks(True)
         self.sifre_label.setAlignment(Qt.AlignCenter)
@@ -206,7 +195,6 @@ class AnaGirisEkrani(QWidget):
         alt_layout.addWidget(self.sifre_label)
         alt_layout.addWidget(self.iletisim_label)
 
-        # Ana düzen
         ana_layout = QVBoxLayout()
         ana_layout.addWidget(ust_serit)
         ana_layout.addSpacing(10)
@@ -218,7 +206,7 @@ class AnaGirisEkrani(QWidget):
 
         self.setLayout(ana_layout)
 
-        self.dil_degisti()  # Varsayılan dil ile başlat
+        self.dil_degisti()
 
     def dil_degisti(self):
         dil = self.dil_combo.currentText()

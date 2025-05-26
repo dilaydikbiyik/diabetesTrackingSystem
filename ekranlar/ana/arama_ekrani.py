@@ -12,14 +12,12 @@ class AramaEkrani(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
 
-        # Üstte numara gösterimi
         self.numara_label = QLabel(numara)
         self.numara_label.setFont(QFont("Arial", 20, QFont.Bold))
         self.numara_label.setStyleSheet("color: white;")
         self.numara_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.numara_label)
 
-        # Tuşlar
         tus_takimi = QGridLayout()
         tuslar = [
             ("1", ""), ("2", "ABC"), ("3", "DEF"),
@@ -47,7 +45,6 @@ class AramaEkrani(QWidget):
 
         layout.addLayout(tus_takimi)
 
-        # Yeşil arama butonu
         arama_buton = QPushButton()
         arama_buton.setFixedSize(70, 70)
         arama_buton.setStyleSheet("""
@@ -56,9 +53,9 @@ class AramaEkrani(QWidget):
                 border-radius: 35px;
             }
         """)
-        arama_buton.setIcon(QIcon("assets/phone_icon.png"))  # yeşil arama simgesi ikon olarak
+        arama_buton.setIcon(QIcon("assets/phone_icon.png"))
         arama_buton.setIconSize(arama_buton.size() * 0.6)
-        arama_buton.clicked.connect(self.close)  # Tıklandığında ekranı kapat
+        arama_buton.clicked.connect(self.close)
 
         layout.addWidget(arama_buton, alignment=Qt.AlignCenter)
         layout.addStretch()

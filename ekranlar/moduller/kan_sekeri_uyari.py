@@ -39,7 +39,6 @@ def gun_sonu_analiz_ve_uyari(hasta_id):
         conn.close()
         return
 
-    # Hipoglisemi ve hiperglisemi için anlık kontroller
     for seviye, zaman, grup in olcumler:
         if seviye < 70:
             cur.execute("""
@@ -52,7 +51,6 @@ def gun_sonu_analiz_ve_uyari(hasta_id):
                 VALUES (%s, %s, %s, %s)
             """, (hasta_id, simdi, kritik_id, f"🚨 Hiperglisemi Uyarısı: {zaman.strftime('%H:%M')} - Seviye: {seviye} mg/dL"))
 
-    # Grup bazlı sıralama
     grup_sirasi = ["sabah", "öğle", "ikindi", "akşam", "gece"]
     grup_verileri = {g: [] for g in grup_sirasi}
     for seviye, _, grup in olcumler:
@@ -61,8 +59,8 @@ def gun_sonu_analiz_ve_uyari(hasta_id):
 
     biriken = []
     for grup in grup_sirasi:
-        biriken.extend(grup_verileri[grup])
-        if biriken:
+        if grup_verileri[grup]:
+            biriken.extend(grup_verileri[grup])
             ort = sum(biriken) / len(biriken)
             if ort < 70:
                 doz = "Yok (Hipoglisemi)"
@@ -81,7 +79,6 @@ def gun_sonu_analiz_ve_uyari(hasta_id):
             """, (hasta_id, simdi, bilgi_id,
                   f"💉 {grup.title()} İnsülin Önerisi: Ortalama {ort:.2f} mg/dL → {doz}"))
 
-    # Yetersiz veri uyarısı
     toplam_olcum = sum(len(v) for v in grup_verileri.values())
     if toplam_olcum < 3:
         cur.execute("""

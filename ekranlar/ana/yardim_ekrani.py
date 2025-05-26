@@ -19,7 +19,6 @@ class YardimPenceresi(QWidget):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
-        # Başlık
         header_frame = QFrame()
         header_frame.setStyleSheet("background-color: #3498db; border-radius: 10px;")
         header_layout = QHBoxLayout(header_frame)
@@ -33,7 +32,6 @@ class YardimPenceresi(QWidget):
 
         main_layout.addWidget(header_frame)
 
-        # Yardım Metni
         content_frame = QFrame()
         content_frame.setStyleSheet("""
             background-color: white;
@@ -97,7 +95,6 @@ class YardimPenceresi(QWidget):
         content_layout.addWidget(self.text_area)
         main_layout.addWidget(content_frame)
 
-        # Footer
         footer_label = QLabel(
             "© 2025 Diyabet Takip Sistemi" if self.dil == "Türkçe" else "© 2025 Diabetes Tracking System")
         footer_label.setAlignment(Qt.AlignCenter)

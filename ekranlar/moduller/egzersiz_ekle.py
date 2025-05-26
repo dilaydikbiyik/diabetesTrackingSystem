@@ -15,13 +15,11 @@ class EgzersizGirisPenceresi(QDialog):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Tarih-saat seçimi
         self.datetime_edit = QDateTimeEdit(QDateTime.currentDateTime())
         self.datetime_edit.setDisplayFormat("dd.MM.yyyy HH:mm:ss")
         layout.addWidget(QLabel("Tarih ve Saat:"))
         layout.addWidget(self.datetime_edit)
 
-        # Egzersiz türü
         self.egzersiz_combo = QComboBox()
         self.cursor.execute("SELECT id, tur_adi FROM egzersiz_turleri ORDER BY id")
         self.egzersizler = self.cursor.fetchall()
@@ -30,7 +28,6 @@ class EgzersizGirisPenceresi(QDialog):
         layout.addWidget(QLabel("Egzersiz Türü:"))
         layout.addWidget(self.egzersiz_combo)
 
-        # Durum (yapıldı/yapılmadı)
         self.durum_combo = QComboBox()
         self.cursor.execute("SELECT id, durum_adi FROM egzersiz_durumlari ORDER BY id")
         self.durumlar = self.cursor.fetchall()
@@ -39,7 +36,6 @@ class EgzersizGirisPenceresi(QDialog):
         layout.addWidget(QLabel("Durum:"))
         layout.addWidget(self.durum_combo)
 
-        # Kaydet butonu
         kaydet_btn = QPushButton("Kaydet")
         kaydet_btn.clicked.connect(self.veri_kaydet)
         layout.addWidget(kaydet_btn)

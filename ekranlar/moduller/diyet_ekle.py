@@ -15,13 +15,11 @@ class DiyetGirisPenceresi(QDialog):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Tarih-saat
         self.datetime_edit = QDateTimeEdit(QDateTime.currentDateTime())
         self.datetime_edit.setDisplayFormat("dd.MM.yyyy HH:mm:ss")
         layout.addWidget(QLabel("Tarih ve Saat:"))
         layout.addWidget(self.datetime_edit)
 
-        # Diyet türü
         self.diyet_combo = QComboBox()
         self.cursor.execute("SELECT id, ad FROM diyet_tanimlari ORDER BY id")
         self.diyetler = self.cursor.fetchall()
@@ -30,7 +28,6 @@ class DiyetGirisPenceresi(QDialog):
         layout.addWidget(QLabel("Diyet Türü:"))
         layout.addWidget(self.diyet_combo)
 
-        # Durum
         self.durum_combo = QComboBox()
         self.durum_combo.addItems(["uygulandı", "uygulanmadı"])
         layout.addWidget(QLabel("Durum:"))

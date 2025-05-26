@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS hastalar (
     FOREIGN KEY (doktor_id) REFERENCES doktorlar(id) ON DELETE CASCADE
 );
 
--- Belirti Tanımları (3NF - Sabit Tanımlar)
+-- Belirti Tanımları
 CREATE TABLE IF NOT EXISTS belirti_tanimlari (
     id SERIAL PRIMARY KEY,
     ad VARCHAR(100) UNIQUE NOT NULL CHECK (
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS belirtiler (
     FOREIGN KEY (belirti_id) REFERENCES belirti_tanimlari(id) ON DELETE CASCADE
 );
 
--- Diyet Tanımları (3NF)
+-- Diyet Tanımları
 CREATE TABLE IF NOT EXISTS diyet_tanimlari (
     id SERIAL PRIMARY KEY,
     ad VARCHAR(50) UNIQUE NOT NULL CHECK (
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS diyetler (
     FOREIGN KEY (diyet_id) REFERENCES diyet_tanimlari(id) ON DELETE CASCADE
 );
 
--- Egzersiz Türleri (3NF)
+-- Egzersiz Türleri
 CREATE TABLE IF NOT EXISTS egzersiz_turleri (
     id SERIAL PRIMARY KEY,
     tur_adi VARCHAR(50) UNIQUE NOT NULL CHECK (
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS egzersiz_turleri (
     )
 );
 
--- Egzersiz Durumları (3NF)
+-- Egzersiz Durumları
 CREATE TABLE IF NOT EXISTS egzersiz_durumlari (
     id SERIAL PRIMARY KEY,
     durum_adi VARCHAR(20) NOT NULL UNIQUE CHECK (durum_adi IN ('yapıldı', 'yapılmadı'))
@@ -116,11 +116,14 @@ CREATE TABLE IF NOT EXISTS kan_sekeri (
     FOREIGN KEY (hasta_id) REFERENCES hastalar(id) ON DELETE CASCADE
 );
 
--- Uyarı Türleri (3NF)
-CREATE TABLE IF NOT EXISTS uyari_turleri (
-    id SERIAL PRIMARY KEY,
-    tip VARCHAR(50) UNIQUE NOT NULL CHECK (tip IN ('kritik', 'normal', 'bilgilendirme'))
-);
+-- Uyarı Türleri
+CREATE TABLE IF NOT EXISTS public.uyari_turleri
+(
+    id integer NOT NULL DEFAULT nextval('uyari_turleri_id_seq'::regclass),
+    tip character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT uyari_turleri_pkey PRIMARY KEY (id),
+    CONSTRAINT uyari_turleri_tip_key UNIQUE (tip)
+)
 
 -- Uyarılar
 CREATE TABLE IF NOT EXISTS uyarilar (
@@ -143,7 +146,7 @@ CREATE TABLE notlar_ve_oneriler (
     aciklama TEXT
 );
 
--- Egzersiz Türleri Durumları Eklemeler
+-- Egzersiz Türleri Durumları
 INSERT INTO egzersiz_turleri (tur_adi) VALUES
 ('Yürüyüş'),
 ('Bisiklet'),
@@ -153,13 +156,13 @@ INSERT INTO egzersiz_durumlari (durum_adi) VALUES
 ('yapıldı'),
 ('yapılmadı');
 
--- Diyet Türleri Eklemeler
+-- Diyet Türleri
 INSERT INTO diyet_tanimlari (ad) VALUES
 ('Az Şekerli Diyet'),
 ('Şekersiz Diyet'),
 ('Dengeli Beslenme');
 
--- Belirti Türleri Eklemeler
+-- Belirti Türleri
 INSERT INTO belirti_tanimlari (ad) VALUES
 ('Poliüri (Sık idrara çıkma)'),
 ('Polifaji (Aşırı açlık hissi)'),
@@ -169,6 +172,16 @@ INSERT INTO belirti_tanimlari (ad) VALUES
 ('Yorgunluk'),
 ('Yaraların yavaş iyileşmesi'),
 ('Bulanık görme');
+
+INSERT INTO uyari_turleri (tip) VALUES
+('kritik'),
+('normal'),
+('bilgilendirme'),
+('takip'),
+('acil'),
+('izleme');
+
+
 
 ALTER TABLE kan_sekeri
 ALTER COLUMN tarih_zaman TYPE timestamptz

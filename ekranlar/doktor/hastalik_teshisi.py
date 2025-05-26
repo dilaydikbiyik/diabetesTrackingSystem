@@ -1,11 +1,13 @@
-from PyQt5.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout,
-                             QPushButton, QTableWidget, QTableWidgetItem, QHeaderView,
-                             QMessageBox, QFrame, QSplitter, QCheckBox, QScrollArea,
-                             QGroupBox, QGridLayout, QSpacerItem, QSizePolicy)
-from PyQt5.QtGui import QFont, QColor, QPixmap, QPalette, QLinearGradient, QBrush, QPainter
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget,
+    QTableWidgetItem, QHeaderView, QMessageBox, QFrame, QSplitter, QCheckBox,
+    QGroupBox
+)
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QTimer
 from veritabani import baglanti_kur
 import datetime
+from ekranlar.moduller.oneri_motoru import oneri_getir
 
 
 class HastalikTeshisiEkrani(QWidget):
@@ -23,18 +25,15 @@ class HastalikTeshisiEkrani(QWidget):
                 background-color: #f8f9fa;
                 font-family: 'Segoe UI', Arial, sans-serif;
             }
-
             QLabel {
                 color: #2c3e50;
             }
-
             #titleLabel {
                 color: #2980b9;
                 font-size: 24px;
                 font-weight: bold;
                 padding: 10px 0px;
             }
-
             #patientInfoLabel {
                 background-color: #ecf0f1;
                 padding: 15px;
@@ -43,7 +42,6 @@ class HastalikTeshisiEkrani(QWidget):
                 font-size: 14px;
                 font-weight: 500;
             }
-
             QGroupBox {
                 font-weight: bold;
                 border: 2px solid #bdc3c7;
@@ -52,7 +50,6 @@ class HastalikTeshisiEkrani(QWidget):
                 padding-top: 15px;
                 background-color: white;
             }
-
             QGroupBox::title {
                 subcontrol-origin: margin;
                 left: 10px;
@@ -60,7 +57,6 @@ class HastalikTeshisiEkrani(QWidget):
                 color: #2c3e50;
                 font-size: 16px;
             }
-
             QTableWidget {
                 background-color: white;
                 border: 1px solid #bdc3c7;
@@ -68,17 +64,14 @@ class HastalikTeshisiEkrani(QWidget):
                 gridline-color: #ecf0f1;
                 font-size: 13px;
             }
-
             QTableWidget::item {
                 padding: 12px;
                 border-bottom: 1px solid #ecf0f1;
             }
-
             QTableWidget::item:selected {
                 background-color: #e3f2fd;
                 color: #1976d2;
             }
-
             QHeaderView::section {
                 background-color: #3498db;
                 color: white;
@@ -87,28 +80,23 @@ class HastalikTeshisiEkrani(QWidget):
                 font-weight: bold;
                 font-size: 14px;
             }
-
-            QCheckBox {
+                        QCheckBox {
                 spacing: 8px;
                 font-size: 13px;
             }
-
             QCheckBox::indicator {
                 width: 20px;
                 height: 20px;
                 border-radius: 3px;
                 border: 2px solid #bdc3c7;
             }
-
             QCheckBox::indicator:checked {
                 background-color: #27ae60;
                 border-color: #27ae60;
             }
-
             QCheckBox::indicator:checked:hover {
                 background-color: #2ecc71;
             }
-
             #diagnosisFrame {
                 background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                     stops: 0 #ffffff, 1 #f8f9fa);
@@ -116,14 +104,6 @@ class HastalikTeshisiEkrani(QWidget):
                 border-radius: 12px;
                 padding: 20px;
             }
-
-            #diagnosisTitle {
-                color: #e74c3c;
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-
             #diagnosisResult {
                 color: #2c3e50;
                 font-size: 16px;
@@ -133,7 +113,6 @@ class HastalikTeshisiEkrani(QWidget):
                 border-radius: 8px;
                 border-left: 4px solid #ffc107;
             }
-
             #recommendationText {
                 color: #495057;
                 font-size: 14px;
@@ -143,7 +122,6 @@ class HastalikTeshisiEkrani(QWidget):
                 background-color: #e8f5e8;
                 border-radius: 6px;
             }
-
             #warningLabel {
                 background-color: #fff3cd;
                 color: #856404;
@@ -153,7 +131,6 @@ class HastalikTeshisiEkrani(QWidget):
                 font-size: 12px;
                 font-style: italic;
             }
-
             QPushButton {
                 background-color: #3498db;
                 color: white;
@@ -164,35 +141,27 @@ class HastalikTeshisiEkrani(QWidget):
                 font-weight: 500;
                 min-width: 120px;
             }
-
             QPushButton:hover {
                 background-color: #2980b9;
             }
-
             QPushButton:pressed {
                 background-color: #21618c;
             }
-
             #saveButton {
                 background-color: #27ae60;
             }
-
             #saveButton:hover {
                 background-color: #229954;
             }
-
             #refreshButton {
                 background-color: #f39c12;
             }
-
             #refreshButton:hover {
                 background-color: #e67e22;
             }
-
             #closeButton {
                 background-color: #95a5a6;
             }
-
             #closeButton:hover {
                 background-color: #7f8c8d;
             }
@@ -203,19 +172,16 @@ class HastalikTeshisiEkrani(QWidget):
         self.setMinimumSize(1200, 800)
         self.resize(1400, 900)
 
-        # Ana layout
         main_layout = QVBoxLayout()
         main_layout.setSpacing(20)
         main_layout.setContentsMargins(25, 25, 25, 25)
 
-        # Header section
         header_layout = QHBoxLayout()
         title_label = QLabel("🏥 Hastalık Teşhisi ve Analiz Sistemi")
         title_label.setObjectName("titleLabel")
         header_layout.addWidget(title_label)
         header_layout.addStretch()
 
-        # Logo
         logo_label = QLabel()
         logo_pixmap = QPixmap("saglik_logo.png")
         if not logo_pixmap.isNull():
@@ -224,35 +190,29 @@ class HastalikTeshisiEkrani(QWidget):
 
         main_layout.addLayout(header_layout)
 
-        # Hasta bilgileri
+        # Hasta bilgileri etiketi
         self.hasta_bilgi_label = QLabel("👤 Hasta Bilgileri Yükleniyor...")
         self.hasta_bilgi_label.setObjectName("patientInfoLabel")
         main_layout.addWidget(self.hasta_bilgi_label)
 
-        # Ana splitter (70% - 30% oranında)
+        # Ana splitter (sol: belirtiler, sağ: teşhis)
         splitter = QSplitter(Qt.Horizontal)
 
-        # Sol panel - Belirtiler (büyütülmüş)
+        # Sol panel
         left_widget = QWidget()
         left_layout = QVBoxLayout(left_widget)
         left_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Belirtiler group box
         belirtiler_group = QGroupBox("📋 Hastalık Belirtileri")
         belirtiler_layout = QVBoxLayout(belirtiler_group)
 
-        # Belirtiler tablosu
         self.belirtiler_table = QTableWidget()
         self.belirtiler_table.setColumnCount(2)
         self.belirtiler_table.setHorizontalHeaderLabels(["Belirti Açıklaması", "Seçim Durumu"])
-
-        # Tablo başlıklarını ayarla
         header = self.belirtiler_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         header.setSectionResizeMode(1, QHeaderView.Fixed)
         self.belirtiler_table.setColumnWidth(1, 120)
-
-        # Tablo ayarları
         self.belirtiler_table.setAlternatingRowColors(True)
         self.belirtiler_table.setSelectionBehavior(QTableWidget.SelectRows)
         self.belirtiler_table.verticalHeader().setVisible(False)
@@ -261,16 +221,14 @@ class HastalikTeshisiEkrani(QWidget):
         belirtiler_layout.addWidget(self.belirtiler_table)
         left_layout.addWidget(belirtiler_group)
 
-        # Sağ panel - Teşhis sonuçları
+        # Sağ panel
         right_widget = QWidget()
         right_layout = QVBoxLayout(right_widget)
         right_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Teşhis group box
         teshis_group = QGroupBox("🔬 Teşhis Analizi")
         teshis_layout = QVBoxLayout(teshis_group)
 
-        # Teşhis frame
         teshis_frame = QFrame()
         teshis_frame.setObjectName("diagnosisFrame")
         teshis_frame_layout = QVBoxLayout(teshis_frame)
@@ -287,7 +245,6 @@ class HastalikTeshisiEkrani(QWidget):
 
         teshis_layout.addWidget(teshis_frame)
 
-        # Uyarı mesajı
         etik_label = QLabel(
             "⚠️ Bu teşhis sistem önerisidir. Lütfen hasta ile paylaşmadan önce titizlikle değerlendirme yapınız.")
         etik_label.setObjectName("warningLabel")
@@ -297,10 +254,9 @@ class HastalikTeshisiEkrani(QWidget):
         right_layout.addWidget(teshis_group)
         right_layout.addStretch()
 
-        # Splitter'a widget'ları ekle ve oranları ayarla
         splitter.addWidget(left_widget)
         splitter.addWidget(right_widget)
-        splitter.setSizes([800, 400])  # Sol taraf daha büyük
+        splitter.setSizes([800, 400])
 
         main_layout.addWidget(splitter)
 
@@ -333,7 +289,6 @@ class HastalikTeshisiEkrani(QWidget):
 
     def verileri_yukle(self):
         try:
-            # Hasta bilgilerini yükle
             bilgiler = self.hasta_bilgilerini_getir()
             if bilgiler:
                 self.hasta_bilgi_label.setText(
@@ -342,18 +297,15 @@ class HastalikTeshisiEkrani(QWidget):
                     f"📧 E-posta: {bilgiler.get('email', 'Belirtilmemiş')}"
                 )
 
-            # Belirtileri yükle
             belirtiler = self.belirtileri_getir()
             self.belirtiler_table.setRowCount(len(belirtiler))
             self.checkboxlar = []
 
             for i, belirti in enumerate(belirtiler):
-                # Belirti adı
                 item = QTableWidgetItem(belirti['ad'])
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # Düzenlenemez yap
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.belirtiler_table.setItem(i, 0, item)
 
-                # Checkbox
                 checkbox_widget = QWidget()
                 checkbox_layout = QHBoxLayout(checkbox_widget)
                 checkbox_layout.setAlignment(Qt.AlignCenter)
@@ -367,22 +319,18 @@ class HastalikTeshisiEkrani(QWidget):
                 self.belirtiler_table.setCellWidget(i, 1, checkbox_widget)
                 self.checkboxlar.append((belirti['ad'], checkbox))
 
-            # Satır yüksekliklerini ayarla
             for i in range(len(belirtiler)):
                 self.belirtiler_table.setRowHeight(i, 50)
 
-            # Teşhisi yap
             self.teshisi_yap([{'ad': ad, 'durum': cb.isChecked()} for ad, cb in self.checkboxlar])
 
         except Exception as e:
             QMessageBox.critical(self, "Veri Yükleme Hatası", f"Veriler yüklenirken hata oluştu:\n{str(e)}")
 
     def belirti_degisti(self):
-        """Belirti seçimi değiştiğinde teşhisi güncelle"""
         QTimer.singleShot(100, self.teshisi_guncelle)
 
     def teshisi_guncelle(self):
-        """Teşhisi güncelle"""
         belirtiler = [{'ad': ad, 'durum': cb.isChecked()} for ad, cb in self.checkboxlar]
         self.teshisi_yap(belirtiler)
 
@@ -394,20 +342,17 @@ class HastalikTeshisiEkrani(QWidget):
                 return
 
             cur = conn.cursor()
-
-            # Önce mevcut belirtileri sil
             cur.execute("DELETE FROM belirtiler WHERE hasta_id = %s", (self.hasta_id,))
-
-            # Seçili belirtileri kaydet
             kayit_sayisi = 0
+
             for ad, cb in self.checkboxlar:
                 if cb.isChecked():
                     cur.execute("""
-                                INSERT INTO belirtiler (hasta_id, belirti_id, tarih_zaman)
-                                SELECT %s, id, CURRENT_TIMESTAMP
-                                FROM belirti_tanimlari
-                                WHERE ad = %s
-                                """, (self.hasta_id, ad))
+                        INSERT INTO belirtiler (hasta_id, belirti_id, tarih_zaman)
+                        SELECT %s, id, CURRENT_TIMESTAMP
+                        FROM belirti_tanimlari
+                        WHERE ad = %s
+                    """, (self.hasta_id, ad))
                     kayit_sayisi += 1
 
             conn.commit()
@@ -415,13 +360,15 @@ class HastalikTeshisiEkrani(QWidget):
             conn.close()
 
             QMessageBox.information(
-                self,
-                "✅ Başarılı",
+                self, "✅ Başarılı",
                 f"Seçilen {kayit_sayisi} belirti başarıyla kaydedildi.\n"
                 f"Kayıt zamanı: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}"
             )
 
-            # Verileri yenile
+            ortalama = self.ogun_bazli_kan_sekeri_ortalama(self.hasta_id)
+            if ortalama:
+                self.otomatik_teshis_gonder(ortalama)
+
             self.verileri_yukle()
 
         except Exception as e:
@@ -435,11 +382,8 @@ class HastalikTeshisiEkrani(QWidget):
 
             cur = conn.cursor()
             cur.execute("""
-                        SELECT ad, soyad, tc, email
-                        FROM hastalar
-                        WHERE id = %s
-                        """, (self.hasta_id,))
-
+                SELECT ad, soyad, tc, email FROM hastalar WHERE id = %s
+            """, (self.hasta_id,))
             row = cur.fetchone()
             cur.close()
             conn.close()
@@ -463,16 +407,12 @@ class HastalikTeshisiEkrani(QWidget):
 
             cur = conn.cursor()
 
-            # Tüm belirti tanımlarını getir
             cur.execute("SELECT id, ad FROM belirti_tanimlari ORDER BY ad")
             tum_belirtiler = cur.fetchall()
 
-            # Bu hastanın aktif belirtilerini getir
             cur.execute("""
-                        SELECT belirti_id
-                        FROM belirtiler
-                        WHERE hasta_id = %s
-                        """, (self.hasta_id,))
+                SELECT belirti_id FROM belirtiler WHERE hasta_id = %s
+            """, (self.hasta_id,))
             aktif_belirti_idler = {row[0] for row in cur.fetchall()}
 
             cur.close()
@@ -491,10 +431,40 @@ class HastalikTeshisiEkrani(QWidget):
             QMessageBox.critical(self, "❌ Veri Hatası", f"Belirti verileri alınamadı:\n{str(e)}")
             return []
 
+    def ogun_bazli_kan_sekeri_ortalama(self, hasta_id):
+        try:
+            conn = baglanti_kur()
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT olcum_grubu, kan_sekeri
+                FROM kan_sekeri
+                WHERE hasta_id = %s AND tarih_zaman::date = CURRENT_DATE
+            """, (hasta_id,))
+            veriler = cur.fetchall()
+            cur.close()
+            conn.close()
+
+            ogunler = ["sabah", "öğle", "ikindi", "akşam", "gece"]
+            gruplar = {ogun: [] for ogun in ogunler}
+            for grup, seviye in veriler:
+                if grup in gruplar:
+                    gruplar[grup].append(seviye)
+
+            ortalamalar = {}
+            biriken = []
+            for ogun in ogunler:
+                biriken.extend(gruplar[ogun])
+                if biriken:
+                    ort = sum(biriken) / len(biriken)
+                    ortalamalar[ogun] = round(ort, 2)
+
+            return ortalamalar
+        except Exception as e:
+            print("Ortalama hesaplama hatası:", e)
+            return {}
+
     def teshisi_yap(self, belirtiler):
         aktif = set([b['ad'] for b in belirtiler if b['durum']])
-
-        # Teşhis kuralları
         kurallar = {
             "🔴 Hipoglisemi (Düşük Kan Şekeri)": {
                 "gerekli": {
@@ -528,7 +498,6 @@ class HastalikTeshisiEkrani(QWidget):
             }
         }
 
-        # En uygun teşhisi bul
         teshis_bulundu = False
         for teshis_adi, kural in kurallar.items():
             if kural["gerekli"].issubset(aktif):
@@ -547,3 +516,99 @@ class HastalikTeshisiEkrani(QWidget):
                     f"Seçili belirtiler ({len(aktif)} adet) tam bir teşhis için yeterli değil. "
                     f"Ek muayene ve testler gerekebilir."
                 )
+
+
+    def otomatik_teshis_gonder(self, ortalamalar):
+        try:
+            aktif = set([ad.split(" (")[0] for ad, cb in self.checkboxlar if cb.isChecked()])
+            if not aktif or not ortalamalar:
+                return
+
+            ogunler = list(ortalamalar.keys())
+            son_ogun = ogunler[-1]
+            ort = ortalamalar[son_ogun]
+
+            teshisler = [
+                {
+                    "isim": "Hipoglisemi",
+                    "min": 0, "max": 70,
+                    "belirtiler": {"Nöropati", "Polifaji", "Yorgunluk"},
+                    "mesaj": "Hipoglisemi tespit edildi. Belirtiler ve ortalama seviye uyuşuyor. Acil müdahale gerekebilir.",
+                    "tip": "kritik"
+                },
+                {
+                    "isim": "Normal - Alt Düzey",
+                    "min": 70, "max": 111,
+                    "belirtiler": {"Yorgunluk", "Kilo Kaybı"},
+                    "mesaj": "Kan şekeri normal alt düzeyde. Belirtiler izlenmeli.",
+                    "tip": "bilgilendirme"
+                },
+                {
+                    "isim": "Normal - Üst Düzey",
+                    "min": 111, "max": 181,
+                    "belirtiler": {"Bulanık Görme", "Nöropati"},
+                    "mesaj": "Hafif yüksek kan şekeri. Belirtiler ve ortalama değer uyumlu. Diyet/egzersiz önerilmeli.",
+                    "tip": "takip"
+                },
+                {
+                    "isim": "Hiperglisemi",
+                    "min": 181, "max": 999,
+                    "belirtiler": {"Yaraların Yavaş İyileşmesi", "Polifaji", "Polidipsi"},
+                    "mesaj": "Hiperglisemi tespit edildi. Sistem acil durum uyarısı oluşturdu.",
+                    "tip": "acil"
+                }
+            ]
+
+            for t in teshisler:
+                if t["min"] <= ort < t["max"] and t["belirtiler"].issubset(aktif):
+                    # 🔍 Oneri al
+                    oneri = oneri_getir(ort, aktif)
+
+                    if oneri:
+                        conn = baglanti_kur()
+                        cur = conn.cursor()
+
+                        cur.execute("SELECT doktor_id FROM hastalar WHERE id = %s", (self.hasta_id,))
+                        doktor_row = cur.fetchone()
+                        doktor_id = doktor_row[0] if doktor_row else None
+
+                        try:
+                            if doktor_id:
+                                cur.execute("""
+                                    INSERT INTO notlar_ve_oneriler (hasta_id, doktor_id, tarih, baslik, aciklama)
+                                    VALUES (%s, %s, NOW(), %s, %s)
+                                """, (
+                                    self.hasta_id,
+                                    doktor_id,
+                                    f"🧾 Otomatik Öneri ({oneri['aralik']})",
+                                    f"📋 Belirtiler: {oneri['belirtiler']}\n"
+                                    f"🥗 Diyet: {oneri['diyet']}\n"
+                                    f"🏃 Egzersiz: {oneri['egzersiz']}"
+                                ))
+                            if not doktor_id:
+                                print("Doktor ID bulunamadı, öneri eklenmedi.")
+                                return
+
+                            conn.commit()
+                        except Exception as e:
+                            print("Not ekleme hatası:", e)
+
+                        # 🔔 Uyarı ekle
+                        cur.execute("SELECT id FROM uyari_turleri WHERE tip = %s", (t["tip"],))
+                        tip_id = cur.fetchone()
+                        if tip_id:
+                            cur.execute("""
+                                INSERT INTO uyarilar (hasta_id, tip_id, mesaj, zaman)
+                                VALUES (%s, %s, %s, NOW())
+                            """, (self.hasta_id, tip_id[0], f"🧪 Teşhis: {t['isim']} - {t['mesaj']}"))
+                            conn.commit()
+
+                        cur.close()
+                        conn.close()
+                    break
+
+        except Exception as e:
+            print("Teşhis bildirimi gönderme hatası:", e)
+
+
+

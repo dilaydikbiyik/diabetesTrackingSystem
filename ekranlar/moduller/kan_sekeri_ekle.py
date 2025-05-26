@@ -1,6 +1,35 @@
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QDateTimeEdit, QMessageBox, QHBoxLayout
 from PyQt5.QtCore import QDateTime, Qt
 from datetime import datetime
+from veritabani import baglanti_kur
+from ekranlar.moduller.kan_sekeri_uyari import gun_sonu_analiz_ve_uyari
+
+
+def anlik_kan_sekeri_analiz(cursor, hasta_id, seviye, zaman):
+    tip = None
+    mesaj = None
+
+    if seviye < 70:
+        tip = "kritik"
+        mesaj = f"🚨 Hipoglisemi Uyarısı: {zaman.strftime('%H:%M')} - Seviye: {seviye} mg/dL"
+    elif seviye > 180:
+        tip = "kritik"
+        mesaj = f"🚨 Hiperglisemi Uyarısı: {zaman.strftime('%H:%M')} - Seviye: {seviye} mg/dL"
+    elif 110 < seviye <= 180:
+        tip = "takip"
+        mesaj = f"ℹ️ Hafif Yüksek Seviye: {zaman.strftime('%H:%M')} - {seviye} mg/dL"
+    elif 70 <= seviye <= 110:
+        tip = "bilgilendirme"
+        mesaj = f"✅ Normal Kan Şekeri Değeri: {zaman.strftime('%H:%M')} - {seviye} mg/dL"
+
+    if tip and mesaj:
+        cursor.execute("SELECT id FROM uyari_turleri WHERE tip = %s", (tip,))
+        tip_id = cursor.fetchone()
+        if tip_id:
+            cursor.execute("""
+                INSERT INTO uyarilar (hasta_id, zaman, tip_id, mesaj)
+                VALUES (%s, %s, %s, %s)
+            """, (hasta_id, zaman, tip_id[0], mesaj))
 
 def saat_araligina_gore_grup(zaman):
     saat = zaman.hour
@@ -18,11 +47,12 @@ def saat_araligina_gore_grup(zaman):
         return "gece"
     return None
 
-class KanSekeriGirisPenceresi(QDialog):
+
+class KanSekeriGirisEkrani(QDialog):
     def __init__(self, hasta_id, conn):
         super().__init__()
         self.setWindowTitle("🩸 Kan Şekeri Ölçümü Girişi")
-        self.setFixedSize(450, 380)
+        self.setFixedSize(470, 400)
         self.hasta_id = hasta_id
         self.conn = conn
         self.cursor = self.conn.cursor()
@@ -32,7 +62,6 @@ class KanSekeriGirisPenceresi(QDialog):
         self.init_ui()
 
     def get_stylesheet(self):
-        """Dialog için modern stil"""
         return """
             QDialog {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -129,7 +158,6 @@ class KanSekeriGirisPenceresi(QDialog):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Başlık etiketi
         title_label = QLabel("🩸 Kan Şekeri Ölçüm Girişi")
         title_label.setStyleSheet("""
             QLabel {
@@ -142,7 +170,6 @@ class KanSekeriGirisPenceresi(QDialog):
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
 
-        # Tarih/Saat Girişi
         tarih_label = QLabel("📅 Ölçüm Zamanı:")
         layout.addWidget(tarih_label)
 
@@ -151,7 +178,6 @@ class KanSekeriGirisPenceresi(QDialog):
         self.datetime_edit.setCalendarPopup(True)
         layout.addWidget(self.datetime_edit)
 
-        # Kan şekeri değeri girişi
         seker_label = QLabel("🧪 Kan Şekeri (mg/dL):")
         layout.addWidget(seker_label)
 
@@ -159,7 +185,6 @@ class KanSekeriGirisPenceresi(QDialog):
         self.giris_edit.setPlaceholderText("Örn: 120")
         layout.addWidget(self.giris_edit)
 
-        # Bilgilendirme notu
         info_label = QLabel("📌 Lütfen geçerli bir saat aralığında ölçüm yapınız:\n"
                             "• Sabah: 07:00–08:00\n• Öğle: 12:00–13:00\n• İkindi: 15:00–16:00\n"
                             "• Akşam: 18:00–19:00\n• Gece: 22:00–23:00")
@@ -173,7 +198,6 @@ class KanSekeriGirisPenceresi(QDialog):
         info_label.setWordWrap(True)
         layout.addWidget(info_label)
 
-        # Butonlar
         kaydet_btn = QPushButton("💾 Kaydet ve Kapat")
         kaydet_btn.clicked.connect(self.veri_kaydet)
 
@@ -232,3 +256,11 @@ class KanSekeriGirisPenceresi(QDialog):
             QMessageBox.information(self, "Başarılı", f"{grup.title()} ölçümü başarıyla kaydedildi.")
 
         self.accept()
+
+        # ⬇️ Anlık uyarı oluştur
+        anlik_kan_sekeri_analiz(self.cursor, self.hasta_id, seviye, zaman)
+        self.conn.commit()
+
+        gun_sonu_analiz_ve_uyari(self.hasta_id)
+
+

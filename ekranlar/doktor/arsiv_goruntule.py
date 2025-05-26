@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
                              QTableWidgetItem, QTabWidget, QLabel, QFrame,
-                             QHeaderView, QScrollArea, QGroupBox)
+                             QHeaderView, QScrollArea, QGroupBox,QTextEdit, QSizePolicy)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QColor
 from veritabani import baglanti_kur
-
+from ekranlar.moduller.oneri_motoru import oneri_getir
 
 class ArsivEkrani(QWidget):
     def __init__(self, hasta_id):
@@ -344,28 +344,61 @@ class ArsivEkrani(QWidget):
         """, (self.hasta_id,))
         veriler = cursor.fetchall()
 
-        # Ana widget
         main_widget = QWidget()
         layout = QVBoxLayout()
+        layout.setSpacing(12)
 
-        # Özet bilgiler
         self.add_summary_widget(layout, "📝 Not ve Öneri Özeti",
                                 f"Toplam Kayıt: {len(veriler)}")
 
-        # Tablo
-        tablo = self.create_styled_table(len(veriler), 3, ["📅 Tarih", "📋 Başlık", "📄 Açıklama"])
+        # Modern kartlar şeklinde önerileri göster
+        for tarih, baslik, aciklama in veriler:
+            kart = QFrame()
+            kart.setStyleSheet("""
+                QFrame {
+                    background-color: #ffffff;
+                    border: 1px solid #D1E7DD;
+                    border-radius: 10px;
+                    padding: 15px;
+                }
+                QLabel {
+                    font-size: 12px;
+                    color: #333333;
+                }
+            """)
+            kart_layout = QVBoxLayout(kart)
 
-        for i, satir in enumerate(veriler):
-            for j, veri in enumerate(satir):
-                item = QTableWidgetItem(str(veri))
-                if j == 2:  # Açıklama sütunu - metin kaydırma
-                    item.setToolTip(str(veri))
-                tablo.setItem(i, j, item)
+            baslik_label = QLabel(f"🗓️ {tarih.strftime('%d.%m.%Y %H:%M:%S')} - <b>{baslik}</b>")
+            baslik_label.setStyleSheet("font-weight: bold; font-size: 13px; color: #2E86AB;")
+            baslik_label.setTextFormat(Qt.RichText)
 
-        layout.addWidget(tablo)
+            aciklama_text = QTextEdit(aciklama)
+            aciklama_text.setReadOnly(True)
+            aciklama_text.setFrameStyle(QFrame.NoFrame)
+            aciklama_text.setStyleSheet("""
+                QTextEdit {
+                    background: #F8FBFF;
+                    border: none;
+                    padding: 8px;
+                    font-size: 12px;
+                    color: #2C3E50;
+                }
+            """)
+            aciklama_text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+            aciklama_text.setMinimumHeight(100)
+
+            kart_layout.addWidget(baslik_label)
+            kart_layout.addWidget(aciklama_text)
+
+            layout.addWidget(kart)
+
+        layout.addStretch()
         main_widget.setLayout(layout)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(main_widget)
 
-        self.tab_widget.addTab(main_widget, "📝 Öneriler")
+        self.tab_widget.addTab(scroll, "📝 Öneriler")
         cursor.close()
         conn.close()
 

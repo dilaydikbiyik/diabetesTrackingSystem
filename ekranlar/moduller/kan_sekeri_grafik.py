@@ -25,7 +25,6 @@ class KanSekeriGrafik(QWidget):
             conn = baglanti_kur()
             cursor = conn.cursor()
 
-            # Kan şekeri verileri
             cursor.execute("""
                 SELECT tarih_zaman, kan_sekeri 
                 FROM kan_sekeri 
@@ -34,7 +33,6 @@ class KanSekeriGrafik(QWidget):
             """, (self.hasta_id,))
             seker_verileri = cursor.fetchall()
 
-            # Diyet tarihleri (uygulananlar)
             cursor.execute("""
                 SELECT tarih_zaman::date 
                 FROM diyetler 
@@ -42,7 +40,6 @@ class KanSekeriGrafik(QWidget):
             """, (self.hasta_id,))
             diyet_tarihleri = [row[0] for row in cursor.fetchall()]
 
-            # Egzersiz tarihleri (yapılanlar)
             cursor.execute("""
                 SELECT e.tarih_zaman::date
                 FROM egzersizler e
@@ -58,21 +55,17 @@ class KanSekeriGrafik(QWidget):
                 QMessageBox.information(self, "Bilgi", "Bu hastaya ait kan şekeri verisi bulunmamaktadır.")
                 return
 
-            # Grafik çizimi
             ax = self.figure.add_subplot(111)
             ax.clear()
 
-            # Kan şekeri çizgisi
             tarih_saatler = [row[0] for row in seker_verileri]
             sekerler = [row[1] for row in seker_verileri]
             ax.plot(tarih_saatler, sekerler, marker='o', linestyle='-', color='blue', label='Kan Şekeri')
 
-            # Diyet noktaları
             for tarih in diyet_tarihleri:
                 diyet_zaman = datetime.combine(tarih, datetime.min.time()) + timedelta(hours=12)
                 ax.axvline(diyet_zaman, color='green', linestyle='--', alpha=0.5, label='Diyet Uygulandı')
 
-            # Egzersiz noktaları
             for tarih in egzersiz_tarihleri:
                 egzersiz_zaman = datetime.combine(tarih, datetime.min.time()) + timedelta(hours=12)
                 ax.axvline(egzersiz_zaman, color='red', linestyle='--', alpha=0.5, label='Egzersiz Yapıldı')

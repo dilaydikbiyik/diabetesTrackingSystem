@@ -38,7 +38,6 @@ class DoktorGirisEkrani(QWidget):
             }
         """)
 
-        # TC Kimlik No
         self.lbl_tc = QLabel("TC Kimlik No:", self)
         self.lbl_tc.move(20, 30)
         self.txt_tc = QLineEdit(self)
@@ -46,7 +45,6 @@ class DoktorGirisEkrani(QWidget):
         self.txt_tc.setPlaceholderText("12345678901")
         self.txt_tc.setFixedWidth(200)
 
-        # Şifre
         self.lbl_sifre = QLabel("Şifre:", self)
         self.lbl_sifre.move(20, 70)
         self.txt_sifre = QLineEdit(self)
@@ -55,7 +53,6 @@ class DoktorGirisEkrani(QWidget):
         self.txt_sifre.setPlaceholderText("Şifrenizi Giriniz")
         self.txt_sifre.setFixedWidth(200)
 
-        # Giriş Butonu
         self.btn_giris = QPushButton("Giriş Yap", self)
         self.btn_giris.move(120, 120)
         self.btn_giris.clicked.connect(self.giris_yap)

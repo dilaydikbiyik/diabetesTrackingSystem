@@ -9,10 +9,10 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from PyQt5.QtCore import Qt
 from veritabani import baglanti_kur
 from ekranlar.doktor.doktor_hasta_ekle import HastaEklemeEkrani
-from ekranlar.kan_sekeri.kan_sekeri_ekle import KanSekeriEklemeEkrani
-from ekranlar.doktor.egzersiz_ekle import EgzersizEklemeEkrani
-from ekranlar.doktor.diyet_ekle import DiyetEklemeEkrani
-from ekranlar.kan_sekeri.kan_sekeri_grafik import KanSekeriGrafik
+from ekranlar.moduller.kan_sekeri_ekle import KanSekeriGirisEkrani
+from ekranlar.moduller.egzersiz_ekle import EgzersizGirisPenceresi
+from ekranlar.moduller.diyet_ekle import DiyetGirisPenceresi
+from ekranlar.moduller.kan_sekeri_grafik import KanSekeriGrafik
 from PyQt5.QtWidgets import QInputDialog, QLineEdit
 import hashlib
 
@@ -523,7 +523,7 @@ class DoktorAnaEkran(QMainWindow):
             QMessageBox.warning(self, "Uyarı", "Lütfen bir hasta seçiniz!")
             return
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        self.kan_sekeri_ekle_ekrani = KanSekeriEklemeEkrani(hasta_id)
+        self.kan_sekeri_ekle_ekrani = KanSekeriGirisEkrani(hasta_id, baglanti_kur())
         self.kan_sekeri_ekle_ekrani.show()
 
     def egzersiz_ekle_ekranini_ac(self):
@@ -531,7 +531,7 @@ class DoktorAnaEkran(QMainWindow):
             QMessageBox.warning(self, "Uyarı", "Lütfen bir hasta seçiniz!")
             return
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        self.egzersiz_ekrani = EgzersizEklemeEkrani(hasta_id)
+        self.egzersiz_ekrani = EgzersizGirisPenceresi(hasta_id,baglanti_kur())
         self.egzersiz_ekrani.show()
 
     def diyet_ekle_ekranini_ac(self):
@@ -539,7 +539,7 @@ class DoktorAnaEkran(QMainWindow):
             QMessageBox.warning(self, "Uyarı", "Lütfen bir hasta seçiniz!")
             return
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        self.diyet_ekrani = DiyetEklemeEkrani(hasta_id)
+        self.diyet_ekrani = DiyetGirisPenceresi(hasta_id,baglanti_kur())
         self.diyet_ekrani.show()
 
     def kan_sekeri_grafik_ac(self):

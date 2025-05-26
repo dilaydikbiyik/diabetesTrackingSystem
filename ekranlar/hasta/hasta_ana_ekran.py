@@ -8,9 +8,10 @@ import matplotlib.style as mplstyle
 from datetime import datetime
 from veritabani import baglanti_kur
 from PyQt5.QtWidgets import QPushButton
-from ekranlar.hasta.kan_sekeri_giris import KanSekeriGirisPenceresi
-from ekranlar.hasta.egzersiz_giris import EgzersizGirisPenceresi
-from ekranlar.hasta.diyet_giris import DiyetGirisPenceresi
+from ekranlar.moduller.kan_sekeri_ekle import KanSekeriGirisEkrani
+from ekranlar.moduller.egzersiz_ekle import EgzersizGirisPenceresi
+from ekranlar.moduller.diyet_ekle import DiyetGirisPenceresi
+from ekranlar.doktor.hastalik_teshisi import HastalikTeshisiEkrani
 from PyQt5.QtWidgets import QInputDialog, QMessageBox
 import hashlib
 
@@ -22,7 +23,6 @@ class HastaAnaEkrani(QWidget):
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setGeometry(200, 100, 1200, 800)
 
-        # Modern stil ayarları
         self.setStyleSheet(self.get_modern_stylesheet())
 
         self.ad = ad
@@ -32,7 +32,6 @@ class HastaAnaEkrani(QWidget):
         self.conn = baglanti_kur()
         self.cursor = self.conn.cursor()
 
-        # Ana layout için scroll area
         self.scroll_area = QScrollArea()
         self.scroll_widget = QWidget()
         self.layout = QVBoxLayout()
@@ -200,14 +199,12 @@ class HastaAnaEkrani(QWidget):
         return self.cursor.fetchone()
 
     def create_header_section(self, ad, soyad, email, profil_resmi):
-        """Modern header bölümü oluştur"""
         header_frame = QFrame()
         header_frame.setObjectName("header-frame")
         header_frame.setFixedHeight(120)
 
         header_layout = QHBoxLayout()
 
-        # Profil resmi
         profile_container = QFrame()
         profile_container.setFixedSize(80, 80)
         profile_container.setStyleSheet("""
@@ -232,7 +229,6 @@ class HastaAnaEkrani(QWidget):
         profile_layout.addWidget(self.lbl_resim)
         profile_container.setLayout(profile_layout)
 
-        # Hasta bilgileri
         info_layout = QVBoxLayout()
 
         ad_label = QLabel(f"{ad} {soyad}")
@@ -254,7 +250,6 @@ class HastaAnaEkrani(QWidget):
         header_layout.addLayout(info_layout)
         header_layout.addStretch()
 
-        # Şifre Yenile Butonu
         sifre_btn = QPushButton("🔒 Şifreyi Değiştir")
         sifre_btn.setFixedHeight(30)
         sifre_btn.setStyleSheet("font-size: 13px; padding: 4px 12px;")
@@ -266,20 +261,16 @@ class HastaAnaEkrani(QWidget):
         return header_frame
 
     def create_stats_cards(self, olcumler):
-        """İstatistik kartları oluştur"""
         stats_frame = QFrame()
         stats_layout = QGridLayout()
 
         if olcumler:
-            # Ortalama hesapla
             toplam = sum(seviye for _, seviye in olcumler)
             adet = len(olcumler)
             ortalama = toplam / adet
 
-            # Son ölçüm
             son_olcum = olcumler[-1][1]
 
-            # İnsülin dozu
             if ortalama < 70:
                 doz = "Yok (Hipoglisemi)"
                 doz_renk = "#dc2626"
@@ -296,7 +287,6 @@ class HastaAnaEkrani(QWidget):
                 doz = "3 ml"
                 doz_renk = "#dc2626"
 
-            # Kartlar
             cards_data = [
                 ("Son Ölçüm", f"{son_olcum} mg/dL", "🩸", "#3b82f6"),
                 ("Ortalama", f"{ortalama:.1f} mg/dL", "📊", "#059669"),
@@ -319,14 +309,12 @@ class HastaAnaEkrani(QWidget):
         return stats_frame
 
     def create_stat_card(self, title, value, icon, color):
-        """Tek istatistik kartı oluştur"""
         card = QFrame()
         card.setObjectName("stat-card")
         card.setFixedHeight(100)
 
         layout = QVBoxLayout()
 
-        # Icon ve başlık
         header_layout = QHBoxLayout()
         icon_label = QLabel(icon)
         icon_label.setStyleSheet(f"font-size: 20px; color: {color};")
@@ -338,7 +326,6 @@ class HastaAnaEkrani(QWidget):
         header_layout.addWidget(title_label)
         header_layout.addStretch()
 
-        # Değer
         value_label = QLabel(value)
         value_label.setObjectName("stat-value")
         value_label.setStyleSheet(f"color: {color};")
@@ -359,43 +346,33 @@ class HastaAnaEkrani(QWidget):
         self.hasta_id, ad, soyad, email, profil_resmi = bilgiler
 
         if not self.bilgi_yuklendi:
-            # Header
             header = self.create_header_section(ad, soyad, email, profil_resmi)
             self.layout.addWidget(header)
             self.bilgi_yuklendi = True
 
-        # Ölçümler
         olcumler = self.get_olcumler()
 
-        # İstatistik kartları
         stats_cards = self.create_stats_cards(olcumler)
         self.layout.addWidget(stats_cards)
 
+        self.show_action_buttons()
+
         if olcumler:
-            # Grafik
             self.show_modern_grafik(olcumler)
 
-            # Ölçüm tablosu
             self.show_modern_olcum_tablosu(olcumler)
         else:
             no_data_card = self.create_info_card("📊 Bugünkü Ölçümler",
                                                  "Bugün için henüz ölçüm verisi bulunmuyor.", "info")
             self.layout.addWidget(no_data_card)
 
-        # Durum kartları
         self.show_durum_kartlari()
 
-        # Uyarılar
         self.show_modern_uyarilar()
 
-        # Günlük yüzdeler
         self.show_gunluk_yuzde_kartlari()
 
-        # Aksiyon butonları
-        self.show_action_buttons()
-
     def create_info_card(self, title, content, card_type="info"):
-        """Bilgi kartı oluştur"""
         card = QFrame()
         if card_type == "warning":
             card.setObjectName("warning-card")
@@ -422,8 +399,6 @@ class HastaAnaEkrani(QWidget):
         return card
 
     def show_modern_grafik(self, olcumler):
-        """Modern grafik göster"""
-        # Matplotlib stilini ayarla
         plt.style.use('default')
 
         zamanlar = [ts for ts, _ in olcumler]
@@ -432,13 +407,10 @@ class HastaAnaEkrani(QWidget):
         fig, ax = plt.subplots(figsize=(10, 4))
         fig.patch.set_facecolor('white')
 
-        # Çizgi grafiği
         line = ax.plot(zamanlar, degerler, linewidth=3, color='#3b82f6',
                        marker='o', markersize=8, markerfacecolor='white',
                        markeredgecolor='#3b82f6', markeredgewidth=2)
 
-        # Normal aralık
-        # Kan şekeri seviyelerine göre arka plan renklendirmesi
         ax.axhspan(70, 110, alpha=0.2, color='#16a34a', label='Normal')
         ax.axhspan(110, 180, alpha=0.2, color='#facc15', label='Hafif Yüksek')
         ax.axhspan(180, 500, alpha=0.2, color='#f87171', label='Hiperglisemi')
@@ -451,7 +423,6 @@ class HastaAnaEkrani(QWidget):
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(loc='upper right', frameon=True, fancybox=True, shadow=True)
 
-        # Eksen stilini ayarla
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_color('#e5e7eb')
@@ -465,13 +436,11 @@ class HastaAnaEkrani(QWidget):
         self.layout.addWidget(graph_card)
 
     def show_modern_olcum_tablosu(self, olcumler):
-        """Modern ölçüm tablosu"""
         tablo = QTableWidget()
         tablo.setRowCount(len(olcumler))
         tablo.setColumnCount(3)
         tablo.setHorizontalHeaderLabels(["📅 Tarih", "🕐 Saat", "🩸 Kan Şekeri (mg/dL)"])
 
-        # Tablo stilini ayarla
         tablo.setAlternatingRowColors(True)
         tablo.setSelectionBehavior(QTableWidget.SelectRows)
         tablo.verticalHeader().setVisible(False)
@@ -485,13 +454,12 @@ class HastaAnaEkrani(QWidget):
             saat_item = QTableWidgetItem(saat)
             seviye_item = QTableWidgetItem(str(seviye))
 
-            # Seviye rengini ayarla
             if seviye < 70:
-                seviye_item.setBackground(QColor("#fecaca"))  # Kırmızı
+                seviye_item.setBackground(QColor("#fecaca"))
             elif 70 <= seviye <= 110:
-                seviye_item.setBackground(QColor("#bbf7d0"))  # Yeşil
+                seviye_item.setBackground(QColor("#bbf7d0"))
             else:
-                seviye_item.setBackground(QColor("#fed7aa"))  # Turuncu
+                seviye_item.setBackground(QColor("#fed7aa"))
 
             tablo.setItem(i, 0, tarih_item)
             tablo.setItem(i, 1, saat_item)
@@ -501,11 +469,9 @@ class HastaAnaEkrani(QWidget):
         self.layout.addWidget(tablo_card)
 
     def show_durum_kartlari(self):
-        """Egzersiz ve diyet durum kartları"""
         durum_frame = QFrame()
         durum_layout = QHBoxLayout()
 
-        # Egzersiz durumu
         self.cursor.execute("""
             SELECT ed.durum_adi
             FROM egzersizler e
@@ -514,7 +480,6 @@ class HastaAnaEkrani(QWidget):
         """, (self.hasta_id,))
         egzersiz = self.cursor.fetchone()
 
-        # Diyet durumu
         self.cursor.execute("""
             SELECT durum
             FROM diyetler
@@ -524,11 +489,9 @@ class HastaAnaEkrani(QWidget):
         """, (self.hasta_id,))
         diyet = self.cursor.fetchone()
 
-        # Egzersiz kartı
         egzersiz_yapildi = egzersiz and egzersiz[0] == 'yapıldı'
         egzersiz_card = self.create_status_card("🏃‍♂️ Egzersiz", egzersiz_yapildi)
 
-        # Diyet kartı
         diyet_uygulandi = diyet and diyet[0] == 'uygulandı'
         diyet_card = self.create_status_card("🍽️ Diyet", diyet_uygulandi)
 
@@ -539,7 +502,6 @@ class HastaAnaEkrani(QWidget):
         self.layout.addWidget(durum_frame)
 
     def create_status_card(self, title, is_completed):
-        """Durum kartı oluştur"""
         card = QFrame()
         if is_completed:
             card.setObjectName("success-card")
@@ -575,7 +537,6 @@ class HastaAnaEkrani(QWidget):
         return card
 
     def show_modern_uyarilar(self):
-        """Modern uyarılar bölümü"""
         self.cursor.execute("""
             SELECT mesaj FROM uyarilar
             WHERE hasta_id = %s AND zaman::date = CURRENT_DATE
@@ -599,21 +560,21 @@ class HastaAnaEkrani(QWidget):
             self.layout.addWidget(success_card)
 
     def show_action_buttons(self):
-        """Aksiyon butonları"""
         button_frame = QFrame()
         button_layout = QHBoxLayout()
 
-        # Kan şekeri butonu
         kan_btn = QPushButton("🩸 Kan Şekeri Girişi")
         kan_btn.clicked.connect(self.kan_sekeri_ekle)
 
-        # Egzersiz butonu
         egzersiz_btn = QPushButton("🏃‍♂️ Egzersiz Girişi")
         egzersiz_btn.clicked.connect(self.egzersiz_ekle)
 
-        # Diyet butonu
         diyet_btn = QPushButton("🍽️ Diyet Girişi")
         diyet_btn.clicked.connect(self.diyet_ekle)
+
+        teshis_btn = QPushButton("🔬 Belirti Girişi / Teşhis")
+        teshis_btn.clicked.connect(self.hastalik_teshisi_ac)
+        button_layout.addWidget(teshis_btn)
 
         button_layout.addWidget(kan_btn)
         button_layout.addWidget(egzersiz_btn)
@@ -623,8 +584,6 @@ class HastaAnaEkrani(QWidget):
         self.layout.addWidget(button_frame)
 
     def show_gunluk_yuzde_kartlari(self):
-        """Günlük yüzde kartları"""
-        # Egzersiz yüzdesi
         self.cursor.execute("""
             SELECT ed.durum_adi
             FROM egzersizler e
@@ -636,7 +595,6 @@ class HastaAnaEkrani(QWidget):
         yapilan_e = sum(1 for (durum,) in egzersizler if durum == "yapıldı")
         egzersiz_oran = (yapilan_e / toplam_e * 100) if toplam_e > 0 else 0
 
-        # Diyet yüzdesi
         self.cursor.execute("""
             SELECT durum
             FROM diyetler
@@ -647,7 +605,6 @@ class HastaAnaEkrani(QWidget):
         uygulanan_d = sum(1 for (durum,) in diyetler if durum == "uygulandı")
         diyet_oran = (uygulanan_d / toplam_d * 100) if toplam_d > 0 else 0
 
-        # Yüzde kartları
         yuzde_frame = QFrame()
         yuzde_layout = QHBoxLayout()
 
@@ -661,7 +618,6 @@ class HastaAnaEkrani(QWidget):
         self.layout.addWidget(yuzde_frame)
 
     def create_percentage_card(self, title, percentage):
-        """Yüzde kartı oluştur"""
         card = QFrame()
         card.setObjectName("stat-card")
 
@@ -700,7 +656,7 @@ class HastaAnaEkrani(QWidget):
         return self.cursor.fetchall()
 
     def kan_sekeri_ekle(self):
-        pencere = KanSekeriGirisPenceresi(self.hasta_id, self.conn)
+        pencere = KanSekeriGirisEkrani(self.hasta_id, self.conn)
         pencere.exec_()
         self.refresh()
 
@@ -737,3 +693,8 @@ class HastaAnaEkrani(QWidget):
                 QMessageBox.information(self, "Başarılı", "Şifreniz başarıyla güncellendi.")
             except Exception as e:
                 QMessageBox.warning(self, "Hata", f"Şifre güncellenemedi: {str(e)}")
+
+    def hastalik_teshisi_ac(self):
+        hasta_id = self.hasta_id
+        self.hastalik_teshisi_pencere = HastalikTeshisiEkrani(hasta_id)
+        self.hastalik_teshisi_pencere.show()
