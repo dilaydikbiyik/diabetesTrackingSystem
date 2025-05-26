@@ -164,10 +164,10 @@ INSERT INTO diyet_tanimlari (ad) VALUES
 
 -- Belirti Türleri
 INSERT INTO belirti_tanimlari (ad) VALUES
-('Poliüri (Sık idrara çıkma)'),
-('Polifaji (Aşırı açlık hissi)'),
-('Polidipsi (Aşırı susama hissi)'),
-('Nöropati (El ve ayaklarda karıncalanma veya uyuşma hissi)'),
+('Poliüri'),
+('Polifaji'),
+('Polidipsi'),
+('Nöropati'),
 ('Kilo kaybı'),
 ('Yorgunluk'),
 ('Yaraların yavaş iyileşmesi'),
