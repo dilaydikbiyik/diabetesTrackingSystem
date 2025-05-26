@@ -26,23 +26,18 @@ class DoktorAnaEkran(QMainWindow):
         self.setGeometry(200, 50, 1200, 800)
         self.setMinimumSize(1000, 700)
 
-        # Ana container
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        # Ana layout (horizontal)
         self.main_layout = QHBoxLayout()
         self.central_widget.setLayout(self.main_layout)
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Sol panel (sidebar)
         self.create_sidebar()
 
-        # Sağ ana içerik alanı
         self.create_main_content()
 
-        # Global stiller
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #f8fafc;
@@ -52,11 +47,9 @@ class DoktorAnaEkran(QMainWindow):
             }
         """)
 
-        # Verileri yükle
         self.doktor_bilgilerini_yukle()
 
     def create_sidebar(self):
-        # Sol panel container
         self.sidebar = QFrame()
         self.sidebar.setFixedWidth(300)
         self.sidebar.setStyleSheet("""
@@ -72,7 +65,6 @@ class DoktorAnaEkran(QMainWindow):
         sidebar_layout.setSpacing(20)
         self.sidebar.setLayout(sidebar_layout)
 
-        # Logo/Başlık
         title_label = QLabel("Doktor Panel")
         title_label.setStyleSheet("""
             QLabel {
@@ -85,16 +77,12 @@ class DoktorAnaEkran(QMainWindow):
         title_label.setAlignment(Qt.AlignCenter)
         sidebar_layout.addWidget(title_label)
 
-        # Doktor profil kartı
         self.create_profile_card(sidebar_layout)
 
-        # Navigasyon menüsü
         self.create_navigation_menu(sidebar_layout)
 
-        # Alt kısım - spacer
         sidebar_layout.addStretch()
 
-        # Çıkış butonu
         logout_btn = QPushButton("🚪 Çıkış Yap")
         logout_btn.setStyleSheet("""
             QPushButton {
@@ -115,7 +103,6 @@ class DoktorAnaEkran(QMainWindow):
         self.main_layout.addWidget(self.sidebar)
 
     def create_profile_card(self, layout):
-        # Profil kartı
         profile_card = QFrame()
         profile_card.setStyleSheet("""
             QFrame {
@@ -129,7 +116,6 @@ class DoktorAnaEkran(QMainWindow):
         profile_layout.setSpacing(8)
         profile_card.setLayout(profile_layout)
 
-        # Profil resmi
         self.lbl_resim = QLabel()
         self.lbl_resim.setFixedSize(80, 80)
         self.lbl_resim.setStyleSheet("""
@@ -143,7 +129,6 @@ class DoktorAnaEkran(QMainWindow):
         self.lbl_resim.setText("👨‍⚕️")
         self.lbl_resim.setStyleSheet(self.lbl_resim.styleSheet() + "font-size: 40px;")
 
-        # Doktor bilgileri
         self.lbl_ad = QLabel("Dr. Doktor Adı")
         self.lbl_email = QLabel("email@example.com")
         self.lbl_uzmanlik = QLabel("Uzmanlık Alanı")
@@ -174,7 +159,6 @@ class DoktorAnaEkran(QMainWindow):
         layout.addWidget(profile_card)
 
     def create_navigation_menu(self, layout):
-        # Navigasyon başlığı
         nav_title = QLabel("Menü")
         nav_title.setStyleSheet("""
             QLabel {
@@ -213,7 +197,6 @@ class DoktorAnaEkran(QMainWindow):
             layout.addWidget(btn)
 
     def create_main_content(self):
-        # Ana içerik alanı
         self.content_area = QFrame()
         self.content_area.setStyleSheet("""
             QFrame {
@@ -227,10 +210,8 @@ class DoktorAnaEkran(QMainWindow):
         self.content_layout.setSpacing(20)
         self.content_area.setLayout(self.content_layout)
 
-        # Üst başlık
         self.create_header()
 
-        # Ana içerik (scroll area)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("""
@@ -253,7 +234,6 @@ class DoktorAnaEkran(QMainWindow):
     def create_header(self):
         header_layout = QHBoxLayout()
 
-        # Başlık
         title = QLabel("Hoşgeldiniz")
         title.setStyleSheet("""
             QLabel {
@@ -263,7 +243,6 @@ class DoktorAnaEkran(QMainWindow):
             }
         """)
 
-        # Tarih/saat bilgisi
         from datetime import datetime
         date_label = QLabel(datetime.now().strftime("%d %B %Y"))
         date_label.setStyleSheet("""
@@ -280,7 +259,6 @@ class DoktorAnaEkran(QMainWindow):
         self.content_layout.addLayout(header_layout)
 
     def create_patients_section(self):
-        # Hasta listesi başlığı
         patients_title = QLabel("Hastalarınız")
         patients_title.setStyleSheet("""
             QLabel {
@@ -292,7 +270,6 @@ class DoktorAnaEkran(QMainWindow):
         """)
         self.scroll_layout.addWidget(patients_title)
 
-        # Hasta listesi kartı
         patients_card = QFrame()
         patients_card.setStyleSheet("""
             QFrame {
@@ -306,7 +283,6 @@ class DoktorAnaEkran(QMainWindow):
         patients_layout.setContentsMargins(20, 20, 20, 20)
         patients_card.setLayout(patients_layout)
 
-        # Hasta listesi
         self.hasta_listesi = QListWidget()
         self.hasta_listesi.setStyleSheet("""
             QListWidget {
@@ -334,11 +310,9 @@ class DoktorAnaEkran(QMainWindow):
 
         self.scroll_layout.addWidget(patients_card)
 
-        # Aksiyon butonları grid
         self.create_action_buttons()
 
     def create_action_buttons(self):
-        # Aksiyon butonları başlığı
         actions_title = QLabel("Hasta İşlemleri")
         actions_title.setStyleSheet("""
             QLabel {
@@ -350,11 +324,9 @@ class DoktorAnaEkran(QMainWindow):
         """)
         self.scroll_layout.addWidget(actions_title)
 
-        # Grid layout für butonlar
         buttons_grid = QGridLayout()
         buttons_grid.setSpacing(15)
 
-        # Buton tanımları (icon, text, color, callback)
         button_configs = [
             ("👤", "Yeni Hasta Ekle", "#48bb78", self.hasta_ekle_ekranini_ac),
             ("🩸", "Kan Şekeri Ekle", "#ed8936", self.kan_sekeri_ekle_ekranini_ac),
@@ -372,7 +344,6 @@ class DoktorAnaEkran(QMainWindow):
             col = i % 4
             buttons_grid.addWidget(btn, row, col)
 
-        # Grid'i ana layout'a ekle
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_grid)
         self.scroll_layout.addWidget(buttons_widget)
@@ -398,7 +369,6 @@ class DoktorAnaEkran(QMainWindow):
             }}
         """)
 
-        # Buton içeriği
         btn_layout = QVBoxLayout()
         btn_layout.setSpacing(8)
 
@@ -420,33 +390,28 @@ class DoktorAnaEkran(QMainWindow):
         btn_layout.addWidget(icon_label)
         btn_layout.addWidget(text_label)
 
-        # Layout'u butona eklemek için farklı yöntem
         btn.clicked.connect(callback)
         btn.setText(f"{icon}\n{text}")
 
         return btn
 
     def darken_color(self, hex_color, factor=0.9):
-        """Rengi koyulaştır"""
         hex_color = hex_color.lstrip('#')
         rgb = tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
         darkened = tuple(int(c * factor) for c in rgb)
         return f"#{darkened[0]:02x}{darkened[1]:02x}{darkened[2]:02x}"
 
     def show_patients_tab(self):
-        # Mevcut içeriği temizle ve hasta sekmesini göster
         self.clear_scroll_content()
         self.create_patients_section()
         self.hastalari_getir()
 
     def clear_scroll_content(self):
-        """Scroll içeriğini temizle"""
         while self.scroll_layout.count():
             child = self.scroll_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
-    # Mevcut metodlar (aynı işlevsellik)
     def doktor_bilgilerini_yukle(self):
         try:
             conn = baglanti_kur()

@@ -257,7 +257,6 @@ class KanSekeriGirisEkrani(QDialog):
 
         self.accept()
 
-        # ⬇️ Anlık uyarı oluştur
         anlik_kan_sekeri_analiz(self.cursor, self.hasta_id, seviye, zaman)
         self.conn.commit()
 

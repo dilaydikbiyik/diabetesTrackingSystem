@@ -10,7 +10,6 @@ def baglanti_kur():
             port="5432",
             options='-c search_path=public'
         )
-        # Otomatik UTC+3 ayarı (Europe/Istanbul)
         with conn.cursor() as cur:
             cur.execute("SET TIME ZONE 'Europe/Istanbul';")
         return conn

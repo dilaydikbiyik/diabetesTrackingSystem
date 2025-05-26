@@ -190,15 +190,12 @@ class HastalikTeshisiEkrani(QWidget):
 
         main_layout.addLayout(header_layout)
 
-        # Hasta bilgileri etiketi
         self.hasta_bilgi_label = QLabel("👤 Hasta Bilgileri Yükleniyor...")
         self.hasta_bilgi_label.setObjectName("patientInfoLabel")
         main_layout.addWidget(self.hasta_bilgi_label)
 
-        # Ana splitter (sol: belirtiler, sağ: teşhis)
         splitter = QSplitter(Qt.Horizontal)
 
-        # Sol panel
         left_widget = QWidget()
         left_layout = QVBoxLayout(left_widget)
         left_layout.setContentsMargins(0, 0, 0, 0)
@@ -221,7 +218,6 @@ class HastalikTeshisiEkrani(QWidget):
         belirtiler_layout.addWidget(self.belirtiler_table)
         left_layout.addWidget(belirtiler_group)
 
-        # Sağ panel
         right_widget = QWidget()
         right_layout = QVBoxLayout(right_widget)
         right_layout.setContentsMargins(0, 0, 0, 0)
@@ -260,7 +256,6 @@ class HastalikTeshisiEkrani(QWidget):
 
         main_layout.addWidget(splitter)
 
-        # Butonlar
         button_layout = QHBoxLayout()
         button_layout.setSpacing(15)
 
@@ -561,7 +556,6 @@ class HastalikTeshisiEkrani(QWidget):
 
             for t in teshisler:
                 if t["min"] <= ort < t["max"] and t["belirtiler"].issubset(aktif):
-                    # 🔍 Oneri al
                     oneri = oneri_getir(ort, aktif)
 
                     if oneri:
@@ -593,7 +587,6 @@ class HastalikTeshisiEkrani(QWidget):
                         except Exception as e:
                             print("Not ekleme hatası:", e)
 
-                        # 🔔 Uyarı ekle
                         cur.execute("SELECT id FROM uyari_turleri WHERE tip = %s", (t["tip"],))
                         tip_id = cur.fetchone()
                         if tip_id:

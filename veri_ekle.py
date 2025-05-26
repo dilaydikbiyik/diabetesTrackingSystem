@@ -128,3 +128,4 @@ if __name__ == "__main__":
         resim_yolu="assets/dilay_dikbiyik.jpg"
     )
 
+

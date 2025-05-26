@@ -13,25 +13,20 @@ class ArsivEkrani(QWidget):
         self.setGeometry(200, 100, 1200, 800)
         self.hasta_id = hasta_id
 
-        # Ana stil ayarları
         self.setStyleSheet(self.get_main_stylesheet())
 
-        # Ana layout
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
-        # Başlık bölümü
         self.create_header(main_layout)
 
-        # Tab widget oluştur
         self.tab_widget = QTabWidget()
         self.tab_widget.setStyleSheet(self.get_tab_stylesheet())
         main_layout.addWidget(self.tab_widget)
 
         self.setLayout(main_layout)
 
-        # Tabloları oluştur
         self.diyet_tablosu()
         self.egzersiz_tablosu()
         self.oneri_tablosu()
@@ -39,7 +34,6 @@ class ArsivEkrani(QWidget):
         self.uyari_tablosu()
 
     def create_header(self, layout):
-        """Başlık bölümünü oluşturur"""
         header_frame = QFrame()
         header_frame.setStyleSheet("""
             QFrame {
@@ -79,7 +73,6 @@ class ArsivEkrani(QWidget):
         layout.addWidget(header_frame)
 
     def get_main_stylesheet(self):
-        """Ana pencere için stil"""
         return """
             QWidget {
                 background-color: #F8FBFF;
@@ -88,7 +81,6 @@ class ArsivEkrani(QWidget):
         """
 
     def get_tab_stylesheet(self):
-        """Tab widget için stil"""
         return """
             QTabWidget::pane {
                 border: 2px solid #D1E7DD;
@@ -129,7 +121,6 @@ class ArsivEkrani(QWidget):
         """
 
     def get_table_stylesheet(self):
-        """Tablo için stil"""
         return """
             QTableWidget {
                 gridline-color: #D1E7DD;
@@ -172,22 +163,19 @@ class ArsivEkrani(QWidget):
         """
 
     def create_styled_table(self, row_count, column_count, headers):
-        """Stilize edilmiş tablo oluşturur"""
         tablo = QTableWidget()
         tablo.setRowCount(row_count)
         tablo.setColumnCount(column_count)
         tablo.setHorizontalHeaderLabels(headers)
         tablo.setStyleSheet(self.get_table_stylesheet())
 
-        # Tablo özellikleri
         tablo.setAlternatingRowColors(True)
         tablo.setSelectionBehavior(QTableWidget.SelectRows)
         tablo.verticalHeader().setVisible(False)
 
-        # Sütun genişliklerini ayarla
         header = tablo.horizontalHeader()
         for i in range(column_count):
-            if i == 0:  # Tarih sütunu
+            if i == 0:
                 header.setSectionResizeMode(i, QHeaderView.ResizeToContents)
             else:
                 header.setSectionResizeMode(i, QHeaderView.Stretch)
@@ -195,7 +183,6 @@ class ArsivEkrani(QWidget):
         return tablo
 
     def add_summary_widget(self, layout, title, stats):
-        """Özet bilgi widget'ı ekler"""
         summary_frame = QFrame()
         summary_frame.setStyleSheet("""
             QFrame {
@@ -248,11 +235,9 @@ class ArsivEkrani(QWidget):
         """, (self.hasta_id,))
         veriler = cursor.fetchall()
 
-        # Ana widget
         main_widget = QWidget()
         layout = QVBoxLayout()
 
-        # Özet bilgiler
         cursor.execute("""
             SELECT COUNT(*), SUM(CASE WHEN durum = 'uygulandı' THEN 1 ELSE 0 END)
             FROM diyetler WHERE hasta_id = %s
@@ -263,13 +248,12 @@ class ArsivEkrani(QWidget):
         self.add_summary_widget(layout, "📊 Diyet İstatistikleri",
                                 f"Toplam: {toplam} | Uygulanan: {uygulanan} | Başarı: %{oran:.1f}")
 
-        # Tablo
         tablo = self.create_styled_table(len(veriler), 3, ["📅 Tarih", "🥗 Diyet Türü", "✅ Durum"])
 
         for i, satir in enumerate(veriler):
             for j, veri in enumerate(satir):
                 item = QTableWidgetItem(str(veri))
-                if j == 2:  # Durum sütunu
+                if j == 2:
                     if str(veri).lower() == 'uygulandı':
                         item.setBackground(QColor("#D4EDDA"))
                     else:
@@ -297,11 +281,9 @@ class ArsivEkrani(QWidget):
         """, (self.hasta_id,))
         veriler = cursor.fetchall()
 
-        # Ana widget
         main_widget = QWidget()
         layout = QVBoxLayout()
 
-        # Özet bilgiler
         cursor.execute("""
             SELECT COUNT(*), SUM(CASE WHEN durum_id = 1 THEN 1 ELSE 0 END)
             FROM egzersizler WHERE hasta_id = %s
@@ -312,13 +294,12 @@ class ArsivEkrani(QWidget):
         self.add_summary_widget(layout, "💪 Egzersiz İstatistikleri",
                                 f"Toplam: {toplam} | Yapılan: {yapilan} | Başarı: %{oran:.1f}")
 
-        # Tablo
         tablo = self.create_styled_table(len(veriler), 3, ["📅 Tarih", "🏃 Egzersiz Türü", "✅ Durum"])
 
         for i, satir in enumerate(veriler):
             for j, veri in enumerate(satir):
                 item = QTableWidgetItem(str(veri))
-                if j == 2:  # Durum sütunu
+                if j == 2:
                     if 'yapıldı' in str(veri).lower():
                         item.setBackground(QColor("#D4EDDA"))
                     else:
@@ -351,7 +332,6 @@ class ArsivEkrani(QWidget):
         self.add_summary_widget(layout, "📝 Not ve Öneri Özeti",
                                 f"Toplam Kayıt: {len(veriler)}")
 
-        # Modern kartlar şeklinde önerileri göster
         for tarih, baslik, aciklama in veriler:
             kart = QFrame()
             kart.setStyleSheet("""
@@ -414,11 +394,9 @@ class ArsivEkrani(QWidget):
         """, (self.hasta_id,))
         veriler = cursor.fetchall()
 
-        # Ana widget
         main_widget = QWidget()
         layout = QVBoxLayout()
 
-        # İstatistikler
         if veriler:
             kan_sekeri_degerleri = [float(v[1]) for v in veriler if v[1] is not None]
             if kan_sekeri_degerleri:
@@ -429,20 +407,19 @@ class ArsivEkrani(QWidget):
                 self.add_summary_widget(layout, "🩸 Kan Şekeri İstatistikleri",
                                         f"Ort: {ortalama:.1f} | Min: {min_deger:.1f} | Max: {max_deger:.1f} mg/dL")
 
-        # Tablo
         tablo = self.create_styled_table(len(veriler), 2, ["📅 Tarih/Saat", "🩸 Kan Şekeri (mg/dL)"])
 
         for i, satir in enumerate(veriler):
             for j, veri in enumerate(satir):
                 item = QTableWidgetItem(str(veri))
-                if j == 1:  # Kan şekeri değeri
+                if j == 1:
                     try:
                         deger = float(veri)
-                        if deger < 70:  # Düşük
+                        if deger < 70:
                             item.setBackground(QColor("#F8D7DA"))
-                        elif deger > 180:  # Yüksek
+                        elif deger > 180:
                             item.setBackground(QColor("#FFF3CD"))
-                        else:  # Normal
+                        else:
                             item.setBackground(QColor("#D4EDDA"))
                     except:
                         pass
@@ -468,21 +445,18 @@ class ArsivEkrani(QWidget):
         """, (self.hasta_id,))
         veriler = cursor.fetchall()
 
-        # Ana widget
         main_widget = QWidget()
         layout = QVBoxLayout()
 
-        # Özet bilgiler
         self.add_summary_widget(layout, "⚠️ Uyarı Özeti",
                                 f"Toplam Uyarı: {len(veriler)}")
 
-        # Tablo
         tablo = self.create_styled_table(len(veriler), 3, ["📅 Tarih", "⚠️ Uyarı Tipi", "💬 Mesaj"])
 
         for i, satir in enumerate(veriler):
             for j, veri in enumerate(satir):
                 item = QTableWidgetItem(str(veri))
-                if j == 1:  # Uyarı tipi
+                if j == 1:
                     tip = str(veri).lower()
                     if 'kritik' in tip or 'acil' in tip:
                         item.setBackground(QColor("#F8D7DA"))

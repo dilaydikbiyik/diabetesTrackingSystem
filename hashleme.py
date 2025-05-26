@@ -1,4 +1,4 @@
 import hashlib
 
 def hashle(sifre):
-    return hashlib.sha256(sifre.encode()).digest()  # ✅ binary (BYTEA ile uyumlu)
+    return hashlib.sha256(sifre.encode()).digest()

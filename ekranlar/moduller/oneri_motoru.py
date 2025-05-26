@@ -1,5 +1,3 @@
-# ekranlar/moduller/oneri_motoru.py
-
 ONERI_KURALLARI = [
     {
         "min": 0, "max": 70,
