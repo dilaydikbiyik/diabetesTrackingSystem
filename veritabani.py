@@ -5,7 +5,7 @@ def baglanti_kur():
         conn = psycopg2.connect(
             dbname="diabetes_tracking_system",
             user="postgres",
-            password="merve813",
+            password="veritabani13",
             host="localhost",
             port="5432",
             options='-c search_path=public'
