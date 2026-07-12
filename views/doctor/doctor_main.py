@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from PyQt5.QtCore import Qt
 from database import connect
-from screens.doctor.add_patient import HastaEklemeEkrani
-from screens.modules.add_blood_sugar import KanSekeriGirisEkrani
-from screens.modules.add_exercise import EgzersizGirisPenceresi
-from screens.modules.add_diet import DiyetGirisPenceresi
-from screens.modules.blood_sugar_chart import KanSekeriGrafik
+from views.doctor.add_patient import HastaEklemeEkrani
+from views.shared.add_blood_sugar import KanSekeriGirisEkrani
+from views.shared.add_exercise import EgzersizGirisPenceresi
+from views.shared.add_diet import DiyetGirisPenceresi
+from views.shared.blood_sugar_chart import KanSekeriGrafik
 from PyQt5.QtWidgets import QInputDialog, QLineEdit
 import hashlib
 
@@ -599,7 +599,7 @@ class DoktorAnaEkran(QMainWindow):
             QMessageBox.warning(self, "Uyarı", "Lütfen bir hasta seçiniz!")
             return
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        from screens.doctor.disease_diagnosis import HastalikTeshisiEkrani
+        from views.doctor.disease_diagnosis import HastalikTeshisiEkrani
         self.teshis_pencere = HastalikTeshisiEkrani(hasta_id)
         self.teshis_pencere.show()
 
@@ -608,7 +608,7 @@ class DoktorAnaEkran(QMainWindow):
             QMessageBox.warning(self, "Uyarı", "Lütfen bir hasta seçiniz!")
             return
         hasta_id = int(self.hasta_listesi.currentItem().text().split(" - ")[0])
-        from screens.doctor.view_archive import ArsivEkrani
+        from views.doctor.view_archive import ArsivEkrani
         self.arsiv_pencere = ArsivEkrani(hasta_id)
         self.arsiv_pencere.show()
 

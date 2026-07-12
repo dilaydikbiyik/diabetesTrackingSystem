@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QComboBox, QFrame
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QCursor, QColor, QPalette, QLinearGradient, QIcon
-from screens.main.patient_login import HastaGirisEkrani
-from screens.main.doctor_login import DoktorGirisEkrani
-from screens.main.help_screen import YardimPenceresi
-from screens.main.reset_password import SifreSifirlaEkrani
-from screens.main.search_screen import AramaEkrani
+from views.main.patient_login import HastaGirisEkrani
+from views.main.doctor_login import DoktorGirisEkrani
+from views.main.help_screen import YardimPenceresi
+from views.main.reset_password import SifreSifirlaEkrani
+from views.main.search_screen import AramaEkrani
 
 class KartFrame(QFrame):
     def __init__(self, baslik, aciklama, icon_path, renk):

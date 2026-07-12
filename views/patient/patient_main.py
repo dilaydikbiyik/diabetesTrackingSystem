@@ -8,10 +8,10 @@ import matplotlib.style as mplstyle
 from datetime import datetime
 from database import connect
 from PyQt5.QtWidgets import QPushButton
-from screens.modules.add_blood_sugar import KanSekeriGirisEkrani
-from screens.modules.add_exercise import EgzersizGirisPenceresi
-from screens.modules.add_diet import DiyetGirisPenceresi
-from screens.doctor.disease_diagnosis import HastalikTeshisiEkrani
+from views.shared.add_blood_sugar import KanSekeriGirisEkrani
+from views.shared.add_exercise import EgzersizGirisPenceresi
+from views.shared.add_diet import DiyetGirisPenceresi
+from views.doctor.disease_diagnosis import HastalikTeshisiEkrani
 from PyQt5.QtWidgets import QInputDialog, QMessageBox
 import hashlib
 

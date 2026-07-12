@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (QLabel, QLineEdit, QPushButton, QMessageBox, QWidge
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap, QPalette, QIcon
 from database import connect
-from hashing import hash_password
+from utils.hashing import hash_password
 import datetime
 import secrets
 import smtplib

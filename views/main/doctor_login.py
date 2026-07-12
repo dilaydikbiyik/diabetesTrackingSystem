@@ -2,15 +2,15 @@ from PyQt5.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QMessageBox,
     QVBoxLayout, QFormLayout, QFrame
 )
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from database import connect
-from hashing import hash_password
-from screens.patient.patient_main import HastaAnaEkrani
+from utils.hashing import hash_password
+from views.doctor.doctor_main import DoktorAnaEkran
 
 MAC_STYLE = """
 QWidget {
-    background-color: #f5f7fa;
+    background-color: #f0f7ff;
     font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
     font-size: 14px;
     color: #1a1a2e;
@@ -18,12 +18,12 @@ QWidget {
 QFrame#card {
     background-color: white;
     border-radius: 14px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #dbeafe;
 }
 QLabel#title {
     font-size: 22px;
     font-weight: bold;
-    color: #1a1a2e;
+    color: #1e3a8a;
 }
 QLabel#subtitle {
     font-size: 13px;
@@ -36,23 +36,19 @@ QLabel {
 }
 QLineEdit {
     background-color: #ffffff;
-    border: 1.5px solid #d1d5db;
+    border: 1.5px solid #bfdbfe;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 15px;
     color: #111827;
-    selection-background-color: #dc3545;
+    selection-background-color: #1d4ed8;
 }
 QLineEdit:focus {
-    border: 1.5px solid #dc3545;
-    background-color: #fff8f8;
-    outline: none;
-}
-QLineEdit::placeholder {
-    color: #9ca3af;
+    border: 1.5px solid #2563eb;
+    background-color: #eff6ff;
 }
 QPushButton#loginBtn {
-    background-color: #dc3545;
+    background-color: #2563eb;
     color: white;
     border: none;
     border-radius: 10px;
@@ -62,18 +58,18 @@ QPushButton#loginBtn {
     letter-spacing: 0.5px;
 }
 QPushButton#loginBtn:hover {
-    background-color: #b91c2c;
+    background-color: #1d4ed8;
 }
 QPushButton#loginBtn:pressed {
-    background-color: #991b1b;
+    background-color: #1e40af;
 }
 """
 
 
-class HastaGirisEkrani(QWidget):
+class DoktorGirisEkrani(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Hasta Girişi")
+        self.setWindowTitle("Doktor Girişi")
         self.setWindowIcon(QIcon("assets/enabiz_logo.png"))
         self.setFixedSize(440, 380)
         self.setStyleSheet(MAC_STYLE)
@@ -90,7 +86,7 @@ class HastaGirisEkrani(QWidget):
         card_layout.setSpacing(18)
 
         # Header
-        title = QLabel("🏥 Hasta Girişi", objectName="title")
+        title = QLabel("🩺 Doktor Girişi", objectName="title")
         title.setAlignment(Qt.AlignCenter)
         subtitle = QLabel("TC Kimlik No ve şifrenizle giriş yapın", objectName="subtitle")
         subtitle.setAlignment(Qt.AlignCenter)
@@ -130,31 +126,32 @@ class HastaGirisEkrani(QWidget):
         sifre = self.txt_sifre.text().strip()
 
         if not tc or not sifre:
-            QMessageBox.warning(self, "Hata", "Lütfen tüm alanları doldurun!")
+            QMessageBox.warning(self, "Uyarı", "Lütfen TC ve şifre alanlarını doldurun!")
             return
 
         hashed_sifre = hash_password(sifre)
         conn = connect()
 
-        if conn:
-            try:
-                cursor = conn.cursor()
-                cursor.execute(
-                    "SELECT ad, soyad FROM hastalar WHERE tc = ? AND sifre = ?",
-                    (tc, hashed_sifre)
-                )
-                result = cursor.fetchone()
+        if not conn:
+            QMessageBox.critical(self, "Hata", "Veritabanı bağlantısı kurulamadı!")
+            return
 
-                if result:
-                    ad, soyad = result[0], result[1]
-                    self.hasta_ekrani = HastaAnaEkrani(ad, soyad, tc)
-                    self.hasta_ekrani.show()
-                    self.close()
-                else:
-                    QMessageBox.warning(self, "Hata", "TC kimlik veya şifre hatalı.")
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, ad, soyad FROM doktorlar WHERE tc = ? AND sifre = ?",
+                (tc, hashed_sifre)
+            )
+            result = cursor.fetchone()
 
-                conn.close()
-            except Exception as e:
-                QMessageBox.critical(self, "Hata", f"Veritabanı hatası:\n{e}")
-        else:
-            QMessageBox.critical(self, "Bağlantı Hatası", "Veritabanına bağlanılamadı.")
+            if result:
+                doktor_id, ad, soyad = result[0], result[1], result[2]
+                self.doktor_ana_ekran = DoktorAnaEkran(doktor_id)
+                self.doktor_ana_ekran.show()
+                self.close()
+            else:
+                QMessageBox.warning(self, "Hata", "Geçersiz TC veya şifre!")
+
+            conn.close()
+        except Exception as e:
+            QMessageBox.critical(self, "Hata", f"Veritabanı hatası:\n{e}")

@@ -3,8 +3,8 @@ Run this after init_db.py to insert sample doctor and patient records.
 Usage: python3 seed_data.py
 """
 from database import connect
-from hashing import hash_password
-from init_db import init
+from utils.hashing import hash_password
+from database.init_db import init
 
 
 def add_doctor(tc, name, surname, email, password, birth_date, gender, specialty, photo_path=None):
@@ -107,4 +107,16 @@ if __name__ == "__main__":
         gender="Kadın",
         doctor_id=1,
         photo_path="assets/dilay_dikbiyik.jpg"
+    )
+
+    # Demo / test patient — easy credentials for quick testing
+    add_patient(
+        tc="22222222222",
+        name="Test",
+        surname="Hasta",
+        email="test.hasta@example.com",
+        password="12345",
+        birth_date="1990-01-01",
+        gender="Erkek",
+        doctor_id=1,
     )

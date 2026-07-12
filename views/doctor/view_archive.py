@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QColor
 from database import connect
-from screens.modules.recommendation_engine import oneri_getir
+from utils.recommendation_engine import oneri_getir
 
 class ArsivEkrani(QWidget):
     def __init__(self, hasta_id):

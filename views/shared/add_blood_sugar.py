@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout
 from PyQt5.QtCore import QDateTime, Qt
 from datetime import datetime
 from database import connect
-from screens.modules.blood_sugar_alert import gun_sonu_analiz_ve_uyari
+from views.shared.blood_sugar_alert import gun_sonu_analiz_ve_uyari
 
 
 def anlik_kan_sekeri_analiz(cursor, hasta_id, seviye, zaman):

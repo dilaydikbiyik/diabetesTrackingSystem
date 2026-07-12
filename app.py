@@ -3,7 +3,7 @@ import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from screens.main.main_login import AnaGirisEkrani
+from views.main.main_login import AnaGirisEkrani
 
 if __name__ == "__main__":
     # Mac Retina / HiDPI support

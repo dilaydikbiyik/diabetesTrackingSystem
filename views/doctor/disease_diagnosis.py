@@ -7,7 +7,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QTimer
 from database import connect
 import datetime
-from screens.modules.recommendation_engine import oneri_getir
+from utils.recommendation_engine import oneri_getir
 
 
 class HastalikTeshisiEkrani(QWidget):
