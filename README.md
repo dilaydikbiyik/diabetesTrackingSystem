@@ -61,7 +61,7 @@ A desktop application for tracking and managing diabetes-related health data, bu
 - Patient registration with auto-generated credentials sent via email (SMTP)
 - Per-patient blood sugar, diet, and exercise data entry
 - Blood sugar trend chart visualization (with diet/exercise event markers)
-- Disease diagnosis system: symptom checkboxes + AI-assisted severity analysis
+- Disease diagnosis system: symptom checkboxes + rule-based severity scoring (symptom sets + blood-sugar thresholds)
 - Patient archive with 5 tabbed views: Diet, Exercises, Recommendations, Blood Sugar, Alerts
 - Password change
 
